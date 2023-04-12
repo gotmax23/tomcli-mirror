@@ -1,0 +1,20 @@
+# Copyright (C) 2023 Maxwell G <maxwell@gtmx.me>
+#
+# SPDX-License-Identifier: MIT
+---
+image: fedora/latest
+packages:
+  - pipx
+  - python3.7
+  - python3.8
+  - python3.9
+  - python3.10-devel
+  - python3.11-devel
+sources:
+  - https://git.sr.ht/~gotmax23/tomcli
+tasks:
+  - install: |
+      pipx install nox
+  - nox: |
+      cd tomcli
+      nox -v -e test
