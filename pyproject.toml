@@ -68,5 +68,8 @@ dev = [
 "Source code" = "https://git.sr.ht/~gotmax23/tomcli"
 "Mailing list" = "https://lists.sr.ht/~gotmax23/tomcli"
 
+[project.scripts]
+"tomcli-get" = "tomcli.cli.get:app"
+
 [tool.hatch.version]
 path = "src/tomcli/__init__.py"

@@ -53,7 +53,7 @@ def codeqa(session: nox.Session):
 
 @nox.session(python=["3.7", "3.8", "3.9", "3.10", "3.11"])
 def test(session: nox.Session):
-    install(session, ".[test]", editable=True)
+    install(session, ".[all,test]", editable=True)
     session.run("pytest", "tests", *session.posargs)
 
 
