@@ -1,0 +1,21 @@
+---
+image: fedora/rawhide
+packages:
+  - mock
+  - mock-core-configs
+  - pipx
+  - rpmbuild
+  - rpmdevtools
+  - rpmlint
+sources:
+  - "https://git.sr.ht/~gotmax23/tomcli"
+tasks:
+  - setup: |
+      pipx install nox
+  - mockbuild-rawhide: |
+      cd tomcli
+      nox -e mockbuild -- --resultdir results_tomcli
+      tar cvf results_tomcli.tar.gz results_tomcli
+  - rpmlint: |
+      cd tomcli
+      rpmlint results_tomcli/*.rpm

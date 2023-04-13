@@ -32,6 +32,13 @@ def install(session: nox.Session, *args, editable=False, **kwargs):
     session.install(*args, "-U", **kwargs)
 
 
+def install_fclogr(session: nox.Session):
+    if Path("../fclogr").exists():
+        install(session, "-e", "../fclogr")
+    else:
+        install(session, "git+https://git.sr.ht/~gotmax23/fclogr#main")
+
+
 @nox.session
 def formatters(session: nox.Session):
     install(session, ".[formatters]")
@@ -168,3 +175,37 @@ def publish(session: nox.Session):
     session.run("hatch", "version", "post")
     session.run("git", "add", f"src/{PROJECT}/__init__.py", external=True)
     session.run("git", "commit", "-S", "-m", "Post release version bump", external=True)
+
+
+@nox.session
+def srpm(session: nox.Session, posargs=None):
+    posargs = posargs or session.posargs
+    install_fclogr(session)
+    session.run("fclogr", "--debug", "dev-srpm", *session.posargs)
+
+
+@nox.session
+def mockbuild(session: nox.Session):
+    tmp = Path(session.create_tmp())
+    srpm.func(session, ("-o", tmp, "--keep"))
+    spec_path = tmp / "tomcli.spec"
+    margs = [
+        "mock",
+        "--spec",
+        spec_path,
+        "--source",
+        tmp,
+        *session.posargs,
+    ]
+    if not session.interactive:
+        margs.append("--verbose")
+    if not {
+        "--clean",
+        "--no-clean",
+        "--cleanup-after",
+        "--no-cleanup-after",
+        "-n",
+        "-N",
+    } & set(session.posargs):
+        margs.insert(1, "-N")
+    session.run(*margs, external=True)
