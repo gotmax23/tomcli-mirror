@@ -1,0 +1,83 @@
+# Copyright (C) 2023 Maxwell G <maxwell@gtmx.me>
+#
+# SPDX-License-Identifier: MIT
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "tomcli"
+dynamic = ["version"]
+description = 'CLI for working with TOML files. Pronounced "tohm-clee."'
+readme = "README.md"
+requires-python = ">=3.7"
+license = "MIT"
+license-files.globs = ["LICENSES/*.txt"]
+authors = [
+  { name = "Maxwell G", email = "maxwell@gtmx.me" },
+]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Environment :: Console",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3.7",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Typing :: Typed",
+]
+dependencies = [
+    "typer",
+]
+
+[project.optional-dependencies]
+# User facing
+all = [
+    "typer[all]",
+    # Keep in sync with tomlkit extra.
+    # We can't use self-referntial extras in Fedora.
+    "tomlkit",
+    #
+]
+tomli = [
+    "tomli ; python_version<'3.11'",
+    "tomli_w",
+]
+tomlkit = [
+    "tomlkit",
+]
+# Development
+codeqa = [
+    "ruff",
+    "reuse",
+]
+formatters = [
+    "black",
+    "ruff",
+]
+typing = [
+    "mypy",
+]
+test = [
+    "pytest",
+]
+dev = [
+    "tomcli[codeqa]",
+    "tomcli[formatters]",
+    "tomcli[test]",
+    "hatch",
+    "nox>=2022.11.21",
+]
+
+[project.urls]
+"Source code" = "https://git.sr.ht/~gotmax23/tomcli"
+"Mailing list" = "https://lists.sr.ht/~gotmax23/tomcli"
+
+[project.scripts]
+"tomcli-get" = "tomcli.cli.get:app"
+"tomcli-set" = "tomcli.cli.set:app"
+
+[tool.hatch.version]
+path = "src/tomcli/__init__.py"

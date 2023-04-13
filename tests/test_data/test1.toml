@@ -1,0 +1,9 @@
+# Copyright (C) 2023 Maxwell G <maxwell@gtmx.me>
+#
+# SPDX-License-Identifier: MIT
+
+[abc]
+data = "1234"
+
+[xyz]
+data = "123"

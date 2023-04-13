@@ -130,6 +130,8 @@ def integer(
     )
     modder: ModderCtx = ctx.find_object(ModderCtx)
     modder.set_default_rw(Reader.TOMLKIT, Writer.TOMLKIT)
+    if "." in value:
+        value = round(float(value))
     return set_type(
         typ=int,
         default=dict,
