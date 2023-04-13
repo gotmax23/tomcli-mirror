@@ -16,6 +16,7 @@ sources:
 tasks:
   - setup: |
       pipx install nox
+      sudo usermod -aG mock $USER
   - mockbuild-rawhide: |
       cd tomcli
       nox -e mockbuild -- --resultdir results_tomcli
