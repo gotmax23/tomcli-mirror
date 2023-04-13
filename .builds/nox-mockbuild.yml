@@ -1,10 +1,14 @@
 ---
+# Copyright (C) 2023 Maxwell G <maxwell@gtmx.me>
+#
+# SPDX-License-Identifier: MIT
+
 image: fedora/rawhide
 packages:
   - mock
   - mock-core-configs
   - pipx
-  - rpmbuild
+  - rpm-build
   - rpmdevtools
   - rpmlint
 sources:

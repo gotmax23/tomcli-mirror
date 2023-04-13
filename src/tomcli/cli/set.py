@@ -10,7 +10,7 @@ import dataclasses
 import operator
 import sys
 from collections.abc import Callable, Mapping, MutableMapping, MutableSequence
-from typing import Any, List, Optional, TypeVar, Union
+from typing import Any, List, Optional, TypeVar
 
 from typer import Argument, Context, Exit, Option, Typer
 
