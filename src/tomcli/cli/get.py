@@ -9,7 +9,7 @@ from __future__ import annotations
 import sys
 from collections.abc import Iterable, Mapping, MutableMapping
 from contextlib import contextmanager
-from typing import Any, BinaryIO, Optional
+from typing import IO, Any, Optional
 
 from typer import Argument, Exit, Typer
 
@@ -36,7 +36,7 @@ def get_part(data: MutableMapping[str, Any], selector: str) -> Any:
 
 
 @contextmanager
-def _std_cm(path: str, dash_stream: str, mode: str) -> Iterable[BinaryIO]:
+def _std_cm(path: str, dash_stream: str, mode: str) -> Iterable[IO[Any]]:
     if str(path) == "-":
         yield dash_stream
     else:
