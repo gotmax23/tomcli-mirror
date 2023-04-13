@@ -8,14 +8,14 @@ from __future__ import annotations
 
 import sys
 from collections.abc import Iterable, Mapping, MutableMapping
-from contextlib import contextmanager
-from typing import IO, Any, Optional
+from typing import Any, Optional
 
 from typer import Argument, Exit, Typer
 
+from tomcli.cli._util import _std_cm
 from tomcli.toml import Reader, Writer, dump, load
 
-app = Typer()
+app = Typer(context_settings=dict(help_option_names=["-h", "--help"]))
 
 
 def get_part(data: MutableMapping[str, Any], selector: str) -> Any:
@@ -33,15 +33,6 @@ def get_part(data: MutableMapping[str, Any], selector: str) -> Any:
         msg = f"Invalid selector {selector!r}: could not find {up_to!r}"
         raise Exit(msg) from None
     return cur
-
-
-@contextmanager
-def _std_cm(path: str, dash_stream: str, mode: str) -> Iterable[IO[Any]]:
-    if str(path) == "-":
-        yield dash_stream
-    else:
-        with open(path, mode) as fp:
-            yield fp
 
 
 @app.command()

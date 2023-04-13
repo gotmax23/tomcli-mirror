@@ -82,7 +82,7 @@ def _get_stream(fp: BinaryIO, backend: Reader | Writer) -> Iterator[IO[Any]]:
 
 def load(
     __fp: BinaryIO,
-    prefered_reader: Reader = DEFAULT_READER,
+    prefered_reader: Reader | None = None,
     allow_fallback: bool = True,
 ) -> MutableMapping[str, Any]:
     """
@@ -96,6 +96,7 @@ def load(
         allow_fallback:
             Whether to fallback to another Reader if `prefered_reader` is unavailable
     """
+    prefered_reader = prefered_reader or DEFAULT_READER
     if not AVAILABLE_READERS:
         missing = ", ".join(module.value for module in Reader)
         raise ModuleNotFoundError(f"None of the following were found: {missing}")
@@ -114,7 +115,7 @@ def load(
 def dump(
     __data: Mapping[str, Any],
     __fp: BinaryIO,
-    prefered_writer: Writer = DEFAULT_WRITER,
+    prefered_writer: Writer | None = None,
     allow_fallback: bool = True,
 ) -> None:
     """
@@ -131,6 +132,7 @@ def dump(
         allow_fallback:
             Whether to fallback to another Writer if `prefered_writer` is unavailable
     """
+    prefered_writer = prefered_writer or DEFAULT_WRITER
     if not AVAILABLE_WRITERS:
         missing = ", ".join(module.value for module in Writer)
         raise ModuleNotFoundError(f"None of the following were found: {missing}")
@@ -144,3 +146,65 @@ def dump(
     writer, mod = next(iter(AVAILABLE_WRITERS.items()))
     with _get_stream(__fp, writer) as wrapper:
         return mod.dump(__data, wrapper)
+
+
+def loads(
+    __data: str,
+    prefered_reader: Reader | None = None,
+    allow_fallback: bool = True,
+) -> MutableMapping[str, Any]:
+    """
+    Parse a string containing TOML data
+
+    Parameters:
+        __data:
+            A string containing TOML data. Positional argument only.
+        prefered_writer:
+            A [`Writer`][tomcli.toml.Writer] to use for serializing the Python
+            object
+        allow_fallback:
+            Whether to fallback to another Writer if `prefered_writer` is unavailable
+    """
+    prefered_reader = prefered_reader or DEFAULT_READER
+    if not AVAILABLE_READERS:
+        missing = ", ".join(module.value for module in Reader)
+        raise ModuleNotFoundError(f"None of the following were found: {missing}")
+
+    if prefered_reader in AVAILABLE_READERS:
+        return AVAILABLE_READERS[prefered_reader].loads(__data)
+    elif not allow_fallback:
+        raise ModuleNotFoundError(f"No module named {prefered_reader.value!r}")
+
+    mod = next(iter(AVAILABLE_READERS.values()))
+    return mod.loads(__data)
+
+
+def dumps(
+    __data: Mapping[str, Any],
+    prefered_writer: Writer | None = None,
+    allow_fallback: bool = True,
+) -> str:
+    """
+    Serialize an object to TOML and return it as a string
+
+    Parameters:
+        __data:
+            A Python object to serialize. Positional argument only.
+        prefered_writer:
+            A [`Writer`][tomcli.toml.Writer] to use for serializing the Python
+            object
+        allow_fallback:
+            Whether to fallback to another Writer if `prefered_writer` is unavailable
+    """
+    prefered_writer = prefered_writer or DEFAULT_WRITER
+    if not AVAILABLE_WRITERS:
+        missing = ", ".join(module.value for module in Writer)
+        raise ModuleNotFoundError(f"None of the following were found: {missing}")
+
+    if prefered_writer in AVAILABLE_WRITERS:
+        return AVAILABLE_WRITERS[prefered_writer].dumps(__data)
+    elif not allow_fallback:
+        raise ModuleNotFoundError(f"No module named {prefered_writer.value!r}")
+
+    mod = next(iter(AVAILABLE_WRITERS.values()))
+    return mod.dumps(__data)

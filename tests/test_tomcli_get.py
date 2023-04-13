@@ -7,6 +7,7 @@ from pathlib import Path
 
 import typer
 import typer.testing
+
 from tomcli.cli.get import app
 
 HERE = Path(__file__).resolve().parent

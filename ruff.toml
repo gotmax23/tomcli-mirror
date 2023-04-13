@@ -34,6 +34,7 @@ ignore = [
 [per-file-ignores]
 "tests/*" = ["ARG"]
 "noxfile.py" = ["ARG"]
+"src/tomcli/cli/*" = ["UP"]
 
 [isort]
 required-imports = ["from __future__ import annotations"]
