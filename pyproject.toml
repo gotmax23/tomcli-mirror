@@ -34,6 +34,16 @@ dependencies = [
 
 [project.optional-dependencies]
 # User facing
+all = [
+    # For typer
+    "rich",
+    # Keep in sync with tomli and tomlkit extras.
+    # We can't use self-referntial extras in Fedora.
+    "tomli ; python_version<'3.11'",
+    "tomli_w",
+    "tomlkit",
+    #
+]
 tomli = [
     "tomli ; python_version<'3.11'",
     "tomli_w",
