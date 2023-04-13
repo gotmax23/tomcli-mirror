@@ -60,7 +60,7 @@ def codeqa(session: nox.Session):
 
 @nox.session(python=["3.7", "3.8", "3.9", "3.10", "3.11"])
 def test(session: nox.Session):
-    install(session, ".[all,test]", editable=True)
+    install(session, ".[all,tomli,test]", editable=True)
     session.run("pytest", "tests", *session.posargs)
 
 
@@ -181,7 +181,7 @@ def publish(session: nox.Session):
 def srpm(session: nox.Session, posargs=None):
     posargs = posargs or session.posargs
     install_fclogr(session)
-    session.run("fclogr", "--debug", "dev-srpm", *session.posargs)
+    session.run("fclogr", "--debug", "dev-srpm", *posargs)
 
 
 @nox.session

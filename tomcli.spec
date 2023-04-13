@@ -1,3 +1,9 @@
+# This specfile is licensed under:
+#
+# Copyright (C) 2023 Maxwell G <gotmax@e.email>
+# SPDX-License-Identifier: MIT
+# License text: https://spdx.org/licenses/MIT.html
+
 Name:           tomcli
 Version:        0.0.0
 Release:        1%{?dist}

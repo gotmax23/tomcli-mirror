@@ -15,6 +15,6 @@ sources:
 tasks:
   - install: |
       pipx install nox
-  - nox: |
+  - nox-lint: |
       cd tomcli
       nox -v -e lint
