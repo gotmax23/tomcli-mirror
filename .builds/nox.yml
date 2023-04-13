@@ -12,9 +12,15 @@ packages:
   - python3.11-devel
 sources:
   - https://git.sr.ht/~gotmax23/tomcli
+secrets:
+  # ~/.copr-dev-hook
+  - e439d187-52e2-4f21-8db9-fa883bebeadc
 tasks:
   - install: |
       pipx install nox
+  - copr_webhook: |
+      cd tomcli
+      nox -e copr_webhook -- ~/.copr-dev-hook -b origin/main --skip-if-missing
   - nox-test: |
       cd tomcli
       nox -v -e test

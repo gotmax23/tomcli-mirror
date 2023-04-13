@@ -3,9 +3,11 @@
 # SPDX-License-Identifier: MIT
 from __future__ import annotations
 
+import argparse
 import datetime
 import os
 from pathlib import Path
+from textwrap import dedent
 
 import nox
 
@@ -37,6 +39,10 @@ def install_fclogr(session: nox.Session):
         install(session, "-e", "../fclogr")
     else:
         install(session, "git+https://git.sr.ht/~gotmax23/fclogr#main")
+
+
+def git(session: nox.Session, *args, **kwargs):
+    return session.run("git", *args, **kwargs, external=True)
 
 
 @nox.session
@@ -209,3 +215,40 @@ def mockbuild(session: nox.Session):
     } & set(session.posargs):
         margs.insert(1, "-N")
     session.run(*margs, external=True)
+
+
+def rev_parse(session: nox.Session, key: str) -> str:
+    return git(session, "rev-parse", key, silent=True).strip()
+
+
+@nox.session
+def copr_webhook(session: nox.Session):
+    install(session, "requests")
+    parser = argparse.ArgumentParser()
+    parser.add_argument("url_file", type=Path)
+    parser.add_argument("--skip-if-missing", action="store_true")
+    parser.add_argument("-b", "--branch", action="append")
+    args = parser.parse_args(session.posargs)
+    if not args.url_file.is_file():
+        msg = f"{args.url_file} does not exist"
+        if args.skip_if_missing:
+            session.warn(f"{msg}. Skipping...")
+            return
+        else:
+            session.error(msg + "!")
+    if args.branch:
+        refs = [rev_parse(session, r) for r in args.branch]
+        head = rev_parse(session, "HEAD")
+        if head not in refs:
+            session.warn(f"Skipping. This hook only runs on {args.branch}.")
+            return
+    code = """
+    import sys
+    from pathlib import Path
+
+    import requests
+
+    url = Path(sys.argv[1]).read_text().strip()
+    requests.post(url, json={}).raise_for_status()
+    """
+    session.run("python", "-c", dedent(code), session.posargs[0])
