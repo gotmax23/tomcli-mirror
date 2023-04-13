@@ -37,3 +37,4 @@ ignore = [
 
 [isort]
 required-imports = ["from __future__ import annotations"]
+known-first-party = ["tomcli"]
