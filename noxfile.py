@@ -74,7 +74,7 @@ def add_frag(
 ) -> tuple[str, list[str]]:
     date = datetime.datetime.now(tz=datetime.timezone.utc).strftime("%Y-%m-%d")
     frag_heading = f"## {version} - {date} <a id={version!r}></a>\n"
-    frag_lines: list[str] = [frag_heading]
+    frag_lines: list[str] = [frag_heading, "\n"]
     with open(frag) as fp:
         raw_frag_lines = list(fp)
         frag_lines.extend(raw_frag_lines)
@@ -88,7 +88,7 @@ def add_frag(
                 needs_append = False
             lines.append(line)
         if needs_append:
-            lines.extend(("\n", *frag_lines, "\n"))
+            lines.extend(("\n", *frag_lines))
         fp.seek(0)
         fp.writelines(lines)
         fp.truncate()
