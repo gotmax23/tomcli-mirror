@@ -43,6 +43,19 @@ tomcli is a CLI for working with TOML files. Pronounced "tohm-clee."
 %pyproject_install
 %pyproject_save_files tomcli
 
+mkdir -p %{buildroot}%{bash_completions_dir}
+mkdir -p %{buildroot}%{fish_completions_dir}
+mkdir -p %{buildroot}%{zsh_completions_dir}
+
+(
+export PYTHONPATH="%{buildroot}%{python3_sitelib}"
+export _TYPER_COMPLETE_TEST_DISABLE_SHELL_DETECTION=1
+for command in %{buildroot}%{_bindir}/tomcli*; do
+    $command --show-completion=bash > "%{buildroot}%{bash_completions_dir}/$(basename $command)"
+    $command --show-completion=fish > "%{buildroot}%{fish_completions_dir}/$(basename $command).fish"
+    $command --show-completion=zsh > "%{buildroot}%{zsh_completions_dir}/_$(basename $command)"
+done
+)
 
 %check
 %pytest
@@ -52,6 +65,9 @@ tomcli is a CLI for working with TOML files. Pronounced "tohm-clee."
 %license LICENSES/*.txt
 %doc README.md
 %{_bindir}/tomcli*
+%{bash_completions_dir}/tomcli*
+%{fish_completions_dir}/tomcli*.fish
+%{zsh_completions_dir}/_tomcli*
 
 
 %changelog
