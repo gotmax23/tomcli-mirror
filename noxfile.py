@@ -146,22 +146,22 @@ def bump(session: nox.Session):
     )
 
 
-def _sign_artifacts(session: nox.Session) -> list[str]:
+def _sign_artifacts(session: nox.Session):
     uid = session.run("git", "config", "user.email", external=True, silent=True).strip()
     dist = Path("dist")
     artifacts = [str(p) for p in (*dist.glob("*.whl"), *dist.glob("*.tar.gz"))]
-    for path in artifacts:
+    for path in tuple(artifacts):
         session.run("gpg", "-u", uid, "--clearsign", path, external=True)
         artifacts.append(f"{path}.asc")
 
 
 @nox.session
 def publish(session: nox.Session):
-    ensure_clean()
+    ensure_clean(session)
     install(session, "hatch")
     session.run("hatch", "build", "--clean")
-    artifacts = _sign_artifacts()
-    session.run("hatch", "publish", *artifacts, *session.posargs)
+    _sign_artifacts(session)
+    session.run("hatch", "publish", *session.posargs)
     session.run("git", "push", "--follow-tags", external=True)
     session.run("hut", "git", "artifact", "upload", *artifacts, external=True)
     session.run("hatch", "version", "post")
