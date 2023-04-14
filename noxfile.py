@@ -187,6 +187,9 @@ def _sign_artifacts(session: nox.Session) -> list[str]:
     dist = Path("dist")
     artifacts = [str(p) for p in (*dist.glob("*.whl"), *dist.glob("*.tar.gz"))]
     for path in tuple(artifacts):
+        if Path(path).exists():
+            session.warn(f"{path} already exists. Not signing it.")
+            continue
         session.run("gpg", "-u", uid, "--clearsign", path, external=True)
         artifacts.append(f"{path}.asc")
     return artifacts
@@ -195,8 +198,7 @@ def _sign_artifacts(session: nox.Session) -> list[str]:
 @nox.session
 def publish(session: nox.Session):
     ensure_clean(session)
-    install(session, "copr", "hatch", "specfile")
-    session.run("hatch", "build", "--clean")
+    install(session, "copr-cli", "hatch", "specfile")
     artifacts = _sign_artifacts(session)
     session.run("hatch", "publish", *session.posargs)
     session.run("git", "push", "--follow-tags", external=True)
