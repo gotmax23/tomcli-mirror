@@ -15,6 +15,7 @@ URL:            https://sr.ht/~gotmax23/tomcli
 Source0:        %{furl}/refs/download/v%{version}/tomcli-%{version}.tar.gz
 
 BuildArch:      noarch
+BuildRequires:  gnupg2
 BuildRequires:  python3-devel
 BuildRequires:  %{py3_dist pytest}
 
