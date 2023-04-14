@@ -19,8 +19,11 @@ BuildRequires:  gnupg2
 BuildRequires:  python3-devel
 BuildRequires:  %{py3_dist pytest}
 
+# One of the TOML backends is required
 Requires:       (%{py3_dist tomcli[tomlkit]} or %{py3_dist tomcli[tomli]})
+# Prefer the tomlkit backend
 Suggests:       %{py3_dist tomcli[tomlkit]}
+# Recommend the 'all' extra
 Recommends:     %{py3_dist tomcli[all]}
 
 
