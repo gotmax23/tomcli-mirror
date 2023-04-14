@@ -61,6 +61,7 @@ for command in %{buildroot}%{_bindir}/tomcli*; do
 done
 )
 
+
 %check
 %pytest
 
