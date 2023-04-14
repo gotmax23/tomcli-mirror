@@ -62,6 +62,9 @@ done
 
 
 %files -f %{pyproject_files}
+# I prefer not to rely on %%pyproject_save_files to mark files with %%license.
+# Also, Fedora's hatchling supports the current draft of PEP 639, but EPEL 9's
+# does not.
 %license LICENSES/*.txt
 %doc README.md
 %{_bindir}/tomcli*
