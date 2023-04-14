@@ -8,6 +8,10 @@ SPDX-License-Identifier: MIT
 
 [![builds.sr.ht status](https://builds.sr.ht/~gotmax23/tomcli/commits/main.svg)](https://builds.sr.ht/~gotmax23/tomcli/commits/main?)
 
+[![copr build status][badge-copr]][link-copr] (gotmax23/tomcli)
+
+[![copr build status][badge-copr-dev]][link-copr-dev] (gotmax23/tomcli-dev)
+
 
 CLI for modifying toml files. Pronounced "tohm-clee."
 
@@ -30,3 +34,8 @@ See [CONTRIBUTING.md](https://git.sr.ht/~gotmax23/tomcli/tree/main/item/CONTRIBU
 This repository is licensed under
 
     SPDX-License-Identifer: MIT
+
+[badge-copr]: https://copr.fedorainfracloud.org/coprs/gotmax23/tomcli/package/tomcli/status_image/last_build.png
+[link-copr]: https://copr.fedorainfracloud.org/coprs/gotmax23/tomcli/
+[badge-copr-dev]: https://copr.fedorainfracloud.org/coprs/gotmax23/tomcli-dev/package/tomcli/status_image/last_build.png
+[link-copr-dev]: https://copr.fedorainfracloud.org/coprs/gotmax23/tomcli-dev/
