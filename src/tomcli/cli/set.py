@@ -175,6 +175,8 @@ def lst(ctx: Context, selector: str = Argument(...), value: List[str] = Argument
         " Better luck next time!"
     )
     return set_type(
+        # `value` should be a List[str], but typer passes a Tuple[str] :shrug:
+        typ=list,
         default=dict,
         fun_msg=fun_msg,
         modder=modder,
