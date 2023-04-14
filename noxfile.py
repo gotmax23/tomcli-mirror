@@ -7,7 +7,7 @@ import argparse
 import datetime
 import os
 from pathlib import Path
-from shutil import copy2
+from shutil import copy2, rmtree
 from textwrap import dedent
 
 import nox
@@ -147,6 +147,7 @@ def _check_git_tag(session: nox.Session, version: str):
 def bump(session: nox.Session):
     ensure_clean(session)
     install(session, "hatch")
+    rmtree("dist", ignore_errors=True)
 
     session.run("hatch", "version", *session.posargs)
     version = session.run("hatch", "version", silent=True).strip()
@@ -163,6 +164,7 @@ def bump(session: nox.Session):
     )
 
     session.run("hatch", "build", "--clean")
+    _sign_artifacts(session)
 
     _, raw_frag_lines = add_frag(session, "FRAG.md", "NEWS.md", version)
     git_msg_file = _msg_tempfile(session, version, raw_frag_lines)
@@ -182,37 +184,54 @@ def bump(session: nox.Session):
     )
 
 
-def _sign_artifacts(session: nox.Session) -> list[str]:
+def _sign_artifacts(session: nox.Session) -> None:
     uid = session.run("git", "config", "user.email", external=True, silent=True).strip()
     dist = Path("dist")
     artifacts = [str(p) for p in (*dist.glob("*.whl"), *dist.glob("*.tar.gz"))]
-    for path in tuple(artifacts):
+    for path in artifacts:
         if Path(path).exists():
             session.warn(f"{path} already exists. Not signing it.")
             continue
-        session.run("gpg", "-u", uid, "--clearsign", path, external=True)
-        artifacts.append(f"{path}.asc")
-    return artifacts
+        session.run(
+            "gpg", "--local-user", uid, "--armor", "--detach-sign", path, external=True
+        )
 
 
 @nox.session
 def publish(session: nox.Session):
+    # Setup
     ensure_clean(session)
-    install(session, "copr-cli", "hatch", "specfile")
-    artifacts = _sign_artifacts(session)
+    install(session, "hatch")
     session.run("hatch", "publish", *session.posargs)
-    session.run("git", "push", "--follow-tags", external=True)
-    session.run("hut", "git", "artifact", "upload", *artifacts, external=True)
 
+    # Copr build
+    copr_release.func(session)
+
+    # Push to git
+    if session.interactive and input("Push to Sourcehut (Y/n)").lower() != "n":
+        git(session, "push", "--follow-tags")
+        srht_artifacts.func(session)
+
+    # Post-release bump
+    session.run("hatch", "version", "post")
+    git(session, "add", f"src/{PROJECT}/__init__.py")
+    git(session, "commit", "-S", "-m", "Post release version bump")
+
+
+@nox.session
+def copr_release(session: nox.Session):
+    install(session, "copr-cli", "requests-gssapi", "specfile")
     tmp = Path(session.create_tmp())
     dest = tmp / "tomcli.spec"
     copy2("tomcli.spec", dest)
     session.run("python", "contrib/fedoraify.py", dest)
-    session.run("copr", "build", "--nowait", "gotmax23/tomcli", str(dest))
+    session.run("copr-cli", "build", "--nowait", "gotmax23/tomcli", str(dest))
 
-    session.run("hatch", "version", "post")
-    session.run("git", "add", f"src/{PROJECT}/__init__.py", external=True)
-    session.run("git", "commit", "-S", "-m", "Post release version bump", external=True)
+
+@nox.session
+def srht_artifacts(session: nox.Session):
+    artifacts = map(str, Path("dist").glob("*"))
+    session.run("hut", "git", "artifact", "upload", *artifacts, external=True)
 
 
 @nox.session

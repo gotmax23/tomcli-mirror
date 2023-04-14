@@ -11,4 +11,5 @@ env*
 /FRAG.md
 .coverage
 *.rpm
-*.tar.gz
+*.tar.gz*
+~gotmax23.pgp
