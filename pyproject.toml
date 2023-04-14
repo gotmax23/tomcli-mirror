@@ -64,9 +64,11 @@ test = [
     "pytest",
 ]
 dev = [
+    "tomcli[all]",
     "tomcli[codeqa]",
     "tomcli[formatters]",
     "tomcli[test]",
+    "tomcli[tomli]",
     "hatch",
     "nox>=2022.11.21",
 ]
