@@ -71,6 +71,7 @@ done
 # does not.
 %license LICENSES/*.txt
 %doc README.md
+%doc NEWS.md
 %{_bindir}/tomcli*
 %{bash_completions_dir}/tomcli*
 %{fish_completions_dir}/tomcli*.fish
