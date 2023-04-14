@@ -227,6 +227,36 @@ def set_type(
     selector: str,
     value: str | Ellipsis = ...,
 ):
+    """
+    Iterate over a TOML file based on a dot-separated selector and preform on
+    operation.
+
+    Parameters:
+        typ:
+            Callable to use when passing `value` to the `callback` function
+        callback:
+            Callable to pass the final dictionary to.
+            The callable should take three arguments:
+                1. The final dictionary
+                2. The final component of the dictionary
+                3. The `value` passed to `set_type()`.
+                   If `value` isn't passed, only two args will be passed.
+        default:
+            default factory to use when a key isn't found in the Mapping
+            instead of raising a KeyError/ValueError
+        fun_msg:
+            Message to raise when the selector is `.`.
+            Set this to `...` (Ellipsis) to proceed and pass
+            the entire dictionary to the callback.
+        modder:
+            ModderCtx object
+        selector:
+            A dot separated map to a key in the TOML mapping.
+            Example: `section1.subsection.value`
+        value:
+            value to pass as the third argument to the `callback`.
+
+    """
     data = modder.load()
     cur = data
     parts = selector.split(".")
@@ -248,4 +278,6 @@ def set_type(
         callback(cur, part)
     else:
         callback(cur, part, typ(value))
+    if selector == ".":
+        data = data["data"]
     modder.dump(data)
