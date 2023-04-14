@@ -54,16 +54,19 @@ def test_get_dict_dump(writer: str, reader: str):
     ]
     ran = typer.testing.CliRunner().invoke(app, args)
     valid = [
-        """\
+        i.strip()
+        for i in (
+            """
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 """,
-        """\
+            """
 requires = [
     "hatchling",
 ]
 build-backend = "hatchling.build"
 """,
+        )
     ]
     assert ran.exit_code == 0
-    assert ran.stdout in valid
+    assert ran.stdout.strip() in valid
