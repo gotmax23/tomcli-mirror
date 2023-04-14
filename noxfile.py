@@ -147,14 +147,36 @@ def _check_git_tag(session: nox.Session, version: str):
 def bump(session: nox.Session):
     ensure_clean(session)
     install(session, "hatch")
+
     session.run("hatch", "version", *session.posargs)
     version = session.run("hatch", "version", silent=True).strip()
     _check_git_tag(session, version)
+
+    session.run(
+        "rpmdev-bumpspec",
+        "--new",
+        version,
+        "--comment",
+        f"Release {version}.",
+        f"{PROJECT}.spec",
+        external=True,
+    )
+
     session.run("hatch", "build", "--clean")
+
     _, raw_frag_lines = add_frag(session, "FRAG.md", "NEWS.md", version)
-    session.run("git", "add", "NEWS.md", f"src/{PROJECT}/__init__.py", external=True)
-    session.run("git", "commit", "-S", "-m", f"Release {version}", external=True)
     git_msg_file = _msg_tempfile(session, version, raw_frag_lines)
+
+    session.run(
+        "git",
+        "add",
+        "NEWS.md",
+        f"src/{PROJECT}/__init__.py",
+        f"{PROJECT}.spec",
+        external=True,
+    )
+    session.run("git", "commit", "-S", "-m", f"Release {version}", external=True)
+    ensure_clean(session)
     session.run(
         "git", "tag", "-s", "-F", git_msg_file, "--edit", f"v{version}", external=True
     )
