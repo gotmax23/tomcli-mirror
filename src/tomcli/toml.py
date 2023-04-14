@@ -102,14 +102,20 @@ def load(
         raise ModuleNotFoundError(f"None of the following were found: {missing}")
 
     if prefered_reader in AVAILABLE_READERS:
-        with _get_stream(__fp, prefered_reader) as wrapper:
-            return AVAILABLE_READERS[prefered_reader].load(wrapper)
+        reader = prefered_reader
+        mod = AVAILABLE_READERS[reader]
     elif not allow_fallback:
         raise ModuleNotFoundError(f"No module named {prefered_reader.value!r}")
+    else:
+        reader, mod = next(iter(AVAILABLE_READERS.items()))
 
-    reader, mod = next(iter(AVAILABLE_READERS.items()))
-    with _get_stream(__fp, reader) as wrapper:
-        return mod.load(wrapper)
+    if hasattr(mod, "load"):
+        with _get_stream(__fp, reader) as wrapper:
+            return mod.load(wrapper)
+    # Older versions of tomlkit
+    else:
+        txt = __fp.read().decode("utf-8")
+        return mod.loads(txt)
 
 
 def dump(
@@ -138,14 +144,19 @@ def dump(
         raise ModuleNotFoundError(f"None of the following were found: {missing}")
 
     if prefered_writer in AVAILABLE_WRITERS:
-        with _get_stream(__fp, prefered_writer) as wrapper:
-            return AVAILABLE_WRITERS[prefered_writer].dump(__data, wrapper)
+        writer = prefered_writer
+        mod = AVAILABLE_WRITERS[writer]
     elif not allow_fallback:
         raise ModuleNotFoundError(f"No module named {prefered_writer.value!r}")
-
-    writer, mod = next(iter(AVAILABLE_WRITERS.items()))
-    with _get_stream(__fp, writer) as wrapper:
-        return mod.dump(__data, wrapper)
+    else:
+        writer, mod = next(iter(AVAILABLE_WRITERS.items()))
+    if hasattr(mod, "dump"):
+        with _get_stream(__fp, writer) as wrapper:
+            return mod.dump(__data, wrapper)
+    # Older versions of tomlkit
+    else:
+        txt = mod.dumps(__data).encode("utf-8")
+        __fp.write(txt)
 
 
 def loads(
@@ -166,16 +177,20 @@ def loads(
             Whether to fallback to another Writer if `prefered_writer` is unavailable
     """
     prefered_reader = prefered_reader or DEFAULT_READER
+    reader: Reader
+    mod: ModuleType
+
     if not AVAILABLE_READERS:
         missing = ", ".join(module.value for module in Reader)
         raise ModuleNotFoundError(f"None of the following were found: {missing}")
 
     if prefered_reader in AVAILABLE_READERS:
-        return AVAILABLE_READERS[prefered_reader].loads(__data)
+        reader = prefered_reader
+        mod = AVAILABLE_READERS[reader]
     elif not allow_fallback:
         raise ModuleNotFoundError(f"No module named {prefered_reader.value!r}")
-
-    mod = next(iter(AVAILABLE_READERS.values()))
+    else:
+        reader, mod = next(iter(AVAILABLE_READERS.items()))
     return mod.loads(__data)
 
 
@@ -202,9 +217,10 @@ def dumps(
         raise ModuleNotFoundError(f"None of the following were found: {missing}")
 
     if prefered_writer in AVAILABLE_WRITERS:
-        return AVAILABLE_WRITERS[prefered_writer].dumps(__data)
+        writer = prefered_writer
+        mod = AVAILABLE_WRITERS[writer]
     elif not allow_fallback:
         raise ModuleNotFoundError(f"No module named {prefered_writer.value!r}")
-
-    mod = next(iter(AVAILABLE_WRITERS.values()))
-    return mod.dumps(__data)
+    else:
+        writer, mod = next(iter(AVAILABLE_WRITERS.items()))
+    return mod.dump(__data)
