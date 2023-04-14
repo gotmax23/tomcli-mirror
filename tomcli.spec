@@ -5,7 +5,7 @@
 # License text: https://spdx.org/licenses/MIT.html
 
 Name:           tomcli
-Version:        0.0.0
+Version:        0.1.0
 Release:        1%{?dist}
 Summary:        CLI for working with TOML files. Pronounced "tohm-clee."
 
@@ -74,5 +74,8 @@ done
 
 
 %changelog
+* Fri Apr 14 2023 Maxwell G <maxwell@gtmx.me> - 0.1.0-1
+- Release 0.1.0.
+
 * Thu Apr 13 2023 Maxwell G <maxwell@gtmx.me> - 0.0.0-1
 - Initial package
