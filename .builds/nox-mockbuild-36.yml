@@ -19,7 +19,7 @@ tasks:
       sudo usermod -aG mock $USER
   - mockbuild-f36: |
       cd tomcli
-      nox -e mockbuild -- --resultdir results_tomcli -r fedora-36-x86_64
+      nox -e mockbuild -- --resultdir results_tomcli --postinstall -r fedora-36-x86_64
       tar cvf results_tomcli.tar.gz results_tomcli
   - rpmlint: |
       cd tomcli
