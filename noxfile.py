@@ -7,6 +7,7 @@ import argparse
 import datetime
 import os
 from pathlib import Path
+from shutil import copy2
 from textwrap import dedent
 
 import nox
@@ -172,12 +173,19 @@ def _sign_artifacts(session: nox.Session) -> list[str]:
 @nox.session
 def publish(session: nox.Session):
     ensure_clean(session)
-    install(session, "hatch")
+    install(session, "copr", "hatch", "specfile")
     session.run("hatch", "build", "--clean")
     artifacts = _sign_artifacts(session)
     session.run("hatch", "publish", *session.posargs)
     session.run("git", "push", "--follow-tags", external=True)
     session.run("hut", "git", "artifact", "upload", *artifacts, external=True)
+
+    tmp = Path(session.create_tmp())
+    dest = tmp / "tomcli.spec"
+    copy2("tomcli.spec", dest)
+    session.run("python", "contrib/fedoraify.py", dest)
+    session.run("copr", "build", "--nowait", "gotmax23/tomcli", str(dest))
+
     session.run("hatch", "version", "post")
     session.run("git", "add", f"src/{PROJECT}/__init__.py", external=True)
     session.run("git", "commit", "-S", "-m", "Post release version bump", external=True)
