@@ -74,6 +74,7 @@ def test(session: nox.Session):
 @nox.session
 def typing(session: nox.Session):
     install(session, ".[typing]", editable=True)
+    session.run("mypy", "src")
 
 
 @nox.session
@@ -189,8 +190,8 @@ def _sign_artifacts(session: nox.Session) -> None:
     dist = Path("dist")
     artifacts = [str(p) for p in (*dist.glob("*.whl"), *dist.glob("*.tar.gz"))]
     for path in artifacts:
-        if Path(path).exists():
-            session.warn(f"{path} already exists. Not signing it.")
+        if Path(path + ".asc").exists():
+            session.warn(f"{path}.asc already exists. Not signing it.")
             continue
         session.run(
             "gpg", "--local-user", uid, "--armor", "--detach-sign", path, external=True
