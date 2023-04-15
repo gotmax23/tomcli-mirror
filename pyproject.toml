@@ -58,6 +58,8 @@ formatters = [
     "ruff",
 ]
 typing = [
+    "tomcli[tomli]",
+    "tomcli[tomlkit]",
     "mypy",
 ]
 test = [

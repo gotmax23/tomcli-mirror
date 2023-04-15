@@ -10,7 +10,7 @@ import sys
 from collections.abc import Iterator, Mapping, MutableMapping
 from contextlib import contextmanager
 from types import ModuleType
-from typing import IO, Any, BinaryIO
+from typing import IO, Any
 
 
 class Reader(enum.Enum):
@@ -33,7 +33,7 @@ class Writer(enum.Enum):
 
 DEFAULT_READER = Reader.TOMLKIT
 DEFAULT_WRITER = Writer.TOMLKIT
-NEEDS_STR: tuple[Writer | Reader] = [Writer.TOMLKIT]
+NEEDS_STR: tuple[Writer | Reader, ...] = (Writer.TOMLKIT,)
 
 AVAILABLE_READERS: dict[Reader, ModuleType] = {}
 AVAILABLE_WRITERS: dict[Writer, ModuleType] = {}
@@ -67,7 +67,7 @@ else:
 
 
 @contextmanager
-def _get_stream(fp: BinaryIO, backend: Reader | Writer) -> Iterator[IO[Any]]:
+def _get_stream(fp: IO[bytes], backend: Reader | Writer) -> Iterator[IO[Any]]:
     if backend in NEEDS_STR:
         fp.flush()
         wrapper = io.TextIOWrapper(fp, "utf-8")
@@ -81,7 +81,7 @@ def _get_stream(fp: BinaryIO, backend: Reader | Writer) -> Iterator[IO[Any]]:
 
 
 def load(
-    __fp: BinaryIO,
+    __fp: IO[bytes],
     prefered_reader: Reader | None = None,
     allow_fallback: bool = True,
 ) -> MutableMapping[str, Any]:
@@ -120,7 +120,7 @@ def load(
 
 def dump(
     __data: Mapping[str, Any],
-    __fp: BinaryIO,
+    __fp: IO[bytes],
     prefered_writer: Writer | None = None,
     allow_fallback: bool = True,
 ) -> None:

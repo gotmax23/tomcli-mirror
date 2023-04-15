@@ -10,7 +10,7 @@ import sys
 from collections.abc import Mapping, MutableMapping
 from typing import Any, Optional
 
-from typer import Argument, Exit, Typer
+from typer import Argument, Typer
 
 from tomcli.cli._util import _std_cm
 from tomcli.toml import Reader, Writer, dump, load
@@ -31,7 +31,7 @@ def get_part(data: MutableMapping[str, Any], selector: str) -> Any:
     except (IndexError, KeyError):
         up_to = ".".join(parts[: idx + 1])
         msg = f"Invalid selector {selector!r}: could not find {up_to!r}"
-        raise Exit(msg) from None
+        sys.exit(msg)
     return cur
 
 

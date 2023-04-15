@@ -12,7 +12,12 @@ import sys
 from collections.abc import Callable, Mapping, MutableMapping, MutableSequence
 from typing import Any, List, Optional, TypeVar
 
-from typer import Argument, Context, Exit, Option, Typer
+if sys.version_info >= (3, 10):
+    from types import EllipsisType
+else:
+    EllipsisType = type(Ellipsis)
+
+from typer import Argument, Context, Option, Typer
 
 from tomcli.cli._util import _std_cm
 from tomcli.toml import Reader, Writer, dump, load
@@ -29,8 +34,8 @@ SELECTOR_HELP = (
 class ModderCtx:
     path: str
     out: str
-    reader: str | None = None
-    writer: str | None = None
+    reader: Reader | None = None
+    writer: Writer | None = None
     allow_fallback_r: bool = True
     allow_fallback_w: bool = True
 
@@ -81,7 +86,7 @@ def delete(
     """
     Delete a value from a TOML file.
     """
-    modder: ModderCtx = ctx.find_object(ModderCtx)
+    modder: ModderCtx = ctx.ensure_object(ModderCtx)
     modder.set_default_rw(Reader.TOMLKIT, Writer.TOMLKIT)
     fun_msg = "Thank you for your patronage, but we won't delete the whole file."
     set_type(
@@ -98,7 +103,7 @@ def string(
     """
     Set a string value in a TOML file
     """
-    modder: ModderCtx = ctx.find_object(ModderCtx)
+    modder: ModderCtx = ctx.ensure_object(ModderCtx)
     modder.set_default_rw(Reader.TOMLKIT, Writer.TOMLKIT)
     fun_msg = (
         "Your heart is in the right place,"
@@ -106,7 +111,6 @@ def string(
     )
     return set_type(
         typ=str,
-        callback=operator.setitem,
         default=dict,
         fun_msg=fun_msg,
         modder=modder,
@@ -128,17 +132,18 @@ def integer(
         "Go outside and contemplate your choice"
         " to replace the whole file with integer."
     )
-    modder: ModderCtx = ctx.find_object(ModderCtx)
+    modder: ModderCtx = ctx.ensure_object(ModderCtx)
     modder.set_default_rw(Reader.TOMLKIT, Writer.TOMLKIT)
+    final: Any = value
     if "." in value:
-        value = round(float(value))
+        final = round(float(value))
     return set_type(
         typ=int,
         default=dict,
         fun_msg=fun_msg,
         modder=modder,
         selector=selector,
-        value=value,
+        value=final,
     )
 
 
@@ -151,7 +156,7 @@ def float_(ctx: Context, selector: str = Argument(...), value: float = Argument(
         "I'll be very sad if you replace the whole TOML file with a string."
         " Computers have feelings too, ya know."
     )
-    modder: ModderCtx = ctx.find_object(ModderCtx)
+    modder: ModderCtx = ctx.ensure_object(ModderCtx)
     modder.set_default_rw(Reader.TOMLKIT, Writer.TOMLKIT)
     return set_type(
         typ=float,
@@ -168,7 +173,7 @@ def lst(ctx: Context, selector: str = Argument(...), value: List[str] = Argument
     """
     Create a list of strings in a TOML file
     """
-    modder: ModderCtx = ctx.find_object(ModderCtx)
+    modder: ModderCtx = ctx.ensure_object(ModderCtx)
     modder.set_default_rw(Reader.TOMLKIT, Writer.TOMLKIT)
     fun_msg = (
         "A list is not a Mapping and therefore can't be the root."
@@ -192,7 +197,7 @@ def append(
     """
     Append strings to an existing list in a TOML file
     """
-    modder: ModderCtx = ctx.find_object(ModderCtx)
+    modder: ModderCtx = ctx.ensure_object(ModderCtx)
     modder.set_default_rw(Reader.TOMLKIT, Writer.TOMLKIT)
     return set_type(
         fun_msg=None,
@@ -206,7 +211,7 @@ def append(
 def _append_callback(cur: MutableMapping[str, Any], part: str, value: list[Any]):
     lst = cur.get(part)
     if not isinstance(lst, MutableSequence):
-        raise Exit(
+        sys.exit(
             "You can only append values to an existing list."
             " Use the 'list' subcommand to create a new list"
         )
@@ -221,11 +226,11 @@ def set_type(
     typ: Callable[[Any], T] = lambda x: x,
     callback: Callable[[MutableMapping[str, Any], str, T], Any]
     | Callable[[MutableMapping[str, Any], str], Any] = operator.setitem,
-    default: Callable[[], Any] | Ellipsis = ...,
+    default: Callable[[], Any] | EllipsisType = ...,
     fun_msg: str | None = "Invalid selector: '.'",
     modder: ModderCtx,
     selector: str,
-    value: str | Ellipsis = ...,
+    value: Any = ...,
 ):
     """
     Iterate over a TOML file based on a dot-separated selector and preform on
@@ -262,7 +267,7 @@ def set_type(
     parts = selector.split(".")
     if selector == ".":
         if fun_msg:
-            raise Exit(fun_msg)
+            sys.exit(fun_msg)
         else:
             cur = {"data": cur}
             parts = ["data"]
@@ -275,9 +280,9 @@ def set_type(
         else:
             cur = cur[part]
     if value is ...:
-        callback(cur, part)
+        callback(cur, part)  # type: ignore[call-arg]
     else:
-        callback(cur, part, typ(value))
+        callback(cur, part, typ(value))  # type: ignore[call-arg]
     if selector == ".":
         data = data["data"]
     modder.dump(data)

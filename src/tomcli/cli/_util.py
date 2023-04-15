@@ -3,15 +3,15 @@
 # SPDX-License-Identifier: MIT
 from __future__ import annotations
 
-from collections.abc import Iterable
+from collections.abc import Iterator
 from contextlib import contextmanager
-from typing import IO, Any
+from typing import IO, AnyStr, cast
 
 
 @contextmanager
-def _std_cm(path: str, dash_stream: str, mode: str) -> Iterable[IO[Any]]:
+def _std_cm(path: str, dash_stream: IO[AnyStr], mode: str) -> Iterator[IO[AnyStr]]:
     if str(path) == "-":
         yield dash_stream
     else:
         with open(path, mode) as fp:
-            yield fp
+            yield cast(IO[AnyStr], fp)
