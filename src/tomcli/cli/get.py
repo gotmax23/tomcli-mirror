@@ -42,8 +42,9 @@ def get(
     reader: Optional[Reader] = None,
     writer: Optional[Writer] = None,
 ):
-    allow_fallback_r = bool(reader)
-    allow_fallback_w = bool(writer)
+    # Allow fallback if options are not passed
+    allow_fallback_r = not bool(reader)
+    allow_fallback_w = not bool(writer)
     reader = reader or Reader.TOMLKIT
     writer = writer or Writer.TOMLKIT
     with _std_cm(path, sys.stdin.buffer, "rb") as fp:
