@@ -1,6 +1,6 @@
 # This specfile is licensed under:
 #
-# Copyright (C) 2023 Maxwell G <gotmax@e.email>
+# Copyright (C) 2023 Maxwell G <maxwell@gtmx.me>
 # SPDX-License-Identifier: MIT
 # License text: https://spdx.org/licenses/MIT.html
 
@@ -32,7 +32,7 @@ tomcli is a CLI for working with TOML files. Pronounced "tohm-clee."
 
 
 %prep
-%autosetup -p1 -n tomcli-%{version}
+%autosetup -p1
 
 
 %generate_buildrequires
