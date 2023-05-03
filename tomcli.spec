@@ -7,7 +7,7 @@
 Name:           tomcli
 Version:        0.1.0
 Release:        1%{?dist}
-Summary:        CLI for working with TOML files. Pronounced "tohm-clee."
+Summary:        CLI for working with TOML files. Pronounced "tom clee."
 
 License:        MIT
 URL:            https://sr.ht/~gotmax23/tomcli
@@ -28,7 +28,7 @@ Recommends:     %{py3_dist tomcli[all]}
 
 
 %description
-tomcli is a CLI for working with TOML files. Pronounced "tohm-clee."
+tomcli is a CLI for working with TOML files. Pronounced "tom clee."
 
 
 %prep

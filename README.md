@@ -13,7 +13,7 @@ SPDX-License-Identifier: MIT
 [![copr build status][badge-copr-dev]][link-copr-dev] (gotmax23/tomcli-dev)
 
 
-CLI for modifying toml files. Pronounced "tohm-clee."
+CLI for modifying toml files. Pronounced "tom clee."
 
 ## Links
 
