@@ -13,3 +13,4 @@ env*
 *.rpm
 *.tar.gz*
 ~gotmax23.pgp
+/fedora*/
