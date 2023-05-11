@@ -277,8 +277,7 @@ def set_type(
             break
         if part not in cur and default is not ...:
             cur[part] = default()
-        else:
-            cur = cur[part]
+        cur = cur[part]
     if value is ...:
         callback(cur, part)  # type: ignore[call-arg]
     else:

@@ -73,3 +73,19 @@ def test_set(rwargs, typ: str, expected):
     print(ran.stdout)
     assert ran.exit_code == 0
     assert loads(ran.stdout) == data
+
+
+def test_set_multilevel(reader: str, writer: str, tmp_path: Path):
+    path = tmp_path / "pyproject.toml"
+    copy2(TEST_DATA / "pyproject.toml", path)
+    with open(path, "rb") as fp:
+        data = load(fp)
+    # Replace project.license string with dict
+    data["project"]["license"] = {"text": "MIT"}
+
+    for cmd in (("del", "project.license"), ("str", "project.license.text", "MIT")):
+        args = ["--reader", reader, "--writer", writer, str(path), *cmd]
+        ran = CliRunner().invoke(app, args, catch_exceptions=False)
+        assert ran.exit_code == 0
+    with open(path, "rb") as fp:
+        assert data == load(fp)
