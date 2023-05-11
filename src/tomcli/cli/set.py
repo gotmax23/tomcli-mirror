@@ -153,7 +153,7 @@ def float_(ctx: Context, selector: str = Argument(...), value: float = Argument(
     Set a float value in a TOML file
     """
     fun_msg = (
-        "I'll be very sad if you replace the whole TOML file with a string."
+        "I'll be very sad if you replace the whole TOML file with a float."
         " Computers have feelings too, ya know."
     )
     modder: ModderCtx = ctx.ensure_object(ModderCtx)
