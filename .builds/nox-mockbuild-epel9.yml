@@ -1,0 +1,27 @@
+---
+# Copyright (C) 2023 Maxwell G <maxwell@gtmx.me>
+#
+# SPDX-License-Identifier: MIT
+
+image: fedora/rawhide
+packages:
+  - mock
+  - mock-core-configs
+  - pipx
+  - rpm-build
+  - rpmdevtools
+  - rpmlint
+sources:
+  - "https://git.sr.ht/~gotmax23/tomcli"
+tasks:
+  - setup: |
+      pipx install nox
+      sudo usermod -aG mock $USER
+  - mockbuild-epel9: |
+      cd tomcli
+      nox -e mockbuild -- --resultdir results_tomcli --postinstall \
+          -r alma+epel-9-x86_64 --enablerepo=epel-testing
+      tar cvf results_tomcli.tar.gz results_tomcli
+  - rpmlint: |
+      cd tomcli
+      rpmlint results_tomcli/*.rpm

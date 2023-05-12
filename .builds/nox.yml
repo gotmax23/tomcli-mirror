@@ -24,3 +24,6 @@ tasks:
   - nox-test: |
       cd tomcli
       nox -v -e test
+  - nox-lint: |
+      cd tomcli
+      nox -v -e lint
