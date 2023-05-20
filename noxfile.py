@@ -205,13 +205,16 @@ def publish(session: nox.Session):
     install(session, "hatch")
     session.run("hatch", "publish", *session.posargs)
 
-    # Copr build
-    copr_release.func(session)
-
     # Push to git
-    if session.interactive and input("Push to Sourcehut (Y/n)").lower() != "n":
+    if (
+        not session.interactive
+        or input("Push to Sourcehut and copr build (Y/n)").lower() != "n"
+    ):
         git(session, "push", "--follow-tags")
         srht_artifacts.func(session)
+
+        # Copr build
+        copr_release.func(session)
 
     # Post-release bump
     session.run("hatch", "version", "post")
