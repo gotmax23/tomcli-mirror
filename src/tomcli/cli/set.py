@@ -221,7 +221,7 @@ def _append_callback(cur: MutableMapping[str, Any], part: str, value: list[Any])
 T = TypeVar("T")
 
 
-def set_type(
+def set_type(  # noqa: PLR0913
     *,
     typ: Callable[[Any], T] = lambda x: x,
     callback: Callable[[MutableMapping[str, Any], str, T], Any]
