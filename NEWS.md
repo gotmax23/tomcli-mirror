@@ -7,6 +7,13 @@ SPDX-License-Identifier: MIT
 NEWS
 =======
 
+## 0.1.2 - 2023-05-20 <a id='0.1.2'></a>
+
+### Fixed
+
+- tomcli-set: fix typo in error message
+- tomcli-set: fix recursive dictionary creation
+
 ## 0.1.1 - 2023-05-03 <a id='0.1.1'></a>
 
 ### Added
