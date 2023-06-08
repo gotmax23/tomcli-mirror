@@ -68,7 +68,9 @@ def codeqa(session: nox.Session):
 @nox.session(python=["3.7", "3.8", "3.9", "3.10", "3.11"])
 def test(session: nox.Session):
     install(session, ".[all,tomli,test]", editable=True)
-    session.run("pytest", "tests", *session.posargs)
+    session.run(
+        "pytest", "tests", *session.posargs, env={"ALLOW_SKIPS": "0"} | os.environ
+    )
 
 
 @nox.session
