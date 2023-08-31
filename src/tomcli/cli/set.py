@@ -17,7 +17,7 @@ else:
 
 from typer import Argument, Context, Option, Typer
 
-from tomcli.cli._util import _std_cm
+from tomcli.cli._util import _std_cm, fatal
 from tomcli.toml import Reader, Writer, dump, load
 
 app = Typer(context_settings=dict(help_option_names=["-h", "--help"]))
@@ -209,7 +209,7 @@ def append(
 def _append_callback(cur: MutableMapping[str, Any], part: str, value: list[Any]):
     lst = cur.get(part)
     if not isinstance(lst, MutableSequence):
-        sys.exit(
+        fatal(
             "You can only append values to an existing list."
             " Use the 'list' subcommand to create a new list"
         )
@@ -265,7 +265,7 @@ def set_type(  # noqa: PLR0913
     parts = selector.split(".")
     if selector == ".":
         if fun_msg:
-            sys.exit(fun_msg)
+            fatal(fun_msg)
         else:
             cur = {"data": cur}
             parts = ["data"]

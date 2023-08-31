@@ -116,3 +116,17 @@ def test_set_append(rwargs, tmp_path: Path):
 
     orig["lst"]["data"].append("4")
     assert loads(path.read_text()) == orig
+
+
+def test_set_append_error(rwargs, tmp_path: Path):
+    orig_path = TEST_DATA / "test2.toml"
+    path = tmp_path / "test2.toml"
+    copy2(orig_path, path)
+
+    args = [*rwargs, str(path), "append", "abc.data", "4"]
+    ran = CliRunner().invoke(app, args, catch_exceptions=False)
+    assert ran.exit_code == 1
+    assert ran.stdout == (
+        "You can only append values to an existing list."
+        " Use the 'list' subcommand to create a new list\n"
+    )

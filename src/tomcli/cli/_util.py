@@ -3,9 +3,12 @@
 # SPDX-License-Identifier: MIT
 from __future__ import annotations
 
+import sys
 from collections.abc import Iterator
 from contextlib import contextmanager
-from typing import IO, AnyStr, cast
+from typing import IO, AnyStr, NoReturn, cast
+
+from typer import Exit
 
 
 @contextmanager
@@ -15,3 +18,8 @@ def _std_cm(path: str, dash_stream: IO[AnyStr], mode: str) -> Iterator[IO[AnyStr
     else:
         with open(path, mode) as fp:
             yield cast(IO[AnyStr], fp)
+
+
+def fatal(*args: object, returncode: int = 1) -> NoReturn:
+    print(*args, file=sys.stderr)
+    raise Exit(returncode)
