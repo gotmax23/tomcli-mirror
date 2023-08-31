@@ -1,16 +1,12 @@
 # Copyright (C) 2023 Maxwell G <maxwell@gtmx.me>
-#
 # SPDX-License-Identifier: MIT
 
-__pycache__/
-.old/
-venv/
-.env*
-env*
-/dist/
-/FRAG.md
-.coverage
 *.rpm
 *.tar.gz*
-~gotmax23.pgp
+.nox/
+/FRAG.md
+/GIT_MSG
+/dist/
+__pycache__/
+venv/
 /fedora*/

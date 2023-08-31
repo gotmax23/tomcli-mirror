@@ -1,7 +1,5 @@
-# Copyright (C) 2023 Maxwell G <gotmax@e.email>
-#
+# Copyright (C) 2023 Maxwell G <maxwell@gtmx.me>
 # SPDX-License-Identifier: MIT
-
 select = [
     # flake8-builtins
     "A",
@@ -14,28 +12,28 @@ select = [
     "F",
     # unused-arguments
     "ARG",
-    # pyupgrade
-    "UP",
     # flake8-simplify
     "SIM",
     # pylint
     "PL",
-    # isort
-    "I",
 ]
 ignore = [
-    # Class attribute is shadowing a python builtin
-    "A003",
     # function-call-in-default-argument
+    # There's nothing wrong with calling a function that returns an immutable
+    # object
     "B008",
+    # `zip()` without an explicit `strict=` parameter.
+    # `zip()` only has that parameter in py310+
+    "B905",
     # Allow overwriting loop variable
     "PLW2901",
+    # Magic value used in comparison
+    # This is a good rule, but the checker is a bit overzealous.
+    "PLR2004",
+    # Too many arguments to function call
+    "PLR0913",
 ]
-[per-file-ignores]
-"tests/*" = ["ARG"]
-"noxfile.py" = ["ARG"]
-"src/tomcli/cli/*" = ["UP"]
 
-[isort]
-required-imports = ["from __future__ import annotations"]
-known-first-party = ["tomcli"]
+[extend-per-file-ignores]
+"tests/*" = ["ARG"]
+

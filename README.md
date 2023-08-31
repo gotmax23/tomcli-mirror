@@ -1,6 +1,5 @@
 <!--
 Copyright (C) 2023 Maxwell G <maxwell@gtmx.me>
-
 SPDX-License-Identifier: MIT
 -->
 
@@ -8,12 +7,7 @@ SPDX-License-Identifier: MIT
 
 [![builds.sr.ht status](https://builds.sr.ht/~gotmax23/tomcli/commits/main.svg)](https://builds.sr.ht/~gotmax23/tomcli/commits/main?)
 
-[![copr build status][badge-copr]][link-copr] (gotmax23/tomcli)
-
-[![copr build status][badge-copr-dev]][link-copr-dev] (gotmax23/tomcli-dev)
-
-
-CLI for modifying toml files. Pronounced "tom clee."
+CLI for working with TOML files. Pronounced "tom clee."
 
 ## Links
 

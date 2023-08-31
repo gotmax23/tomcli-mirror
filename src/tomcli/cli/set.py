@@ -2,8 +2,6 @@
 #
 # SPDX-License-Identifier: MIT
 
-# ruff: noqa: UP007
-
 from __future__ import annotations
 
 import dataclasses
