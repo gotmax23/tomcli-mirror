@@ -130,3 +130,74 @@ def test_set_append_error(rwargs, tmp_path: Path):
         "You can only append values to an existing list."
         " Use the 'list' subcommand to create a new list\n"
     )
+
+
+def test_set_lists_replace_regex(rwargs, tmp_path: Path):
+    orig_path = TEST_DATA / "test2.toml"
+    path = tmp_path / "test2.toml"
+    orig = loads(orig_path.read_text())
+    copy2(orig_path, path)
+
+    args = [*rwargs, str(path), "lists", "replace", "lst.data", r"\d", "xxxx"]
+    ran = CliRunner().invoke(app, args, catch_exceptions=False)
+    assert ran.exit_code == 0
+
+    orig["lst"]["data"] = ["xxxx", "xxxx", "abc", "456"]
+    assert loads(path.read_text()) == orig
+
+
+def test_set_lists_replace_regex2(rwargs, tmp_path: Path):
+    orig_path = TEST_DATA / "test2.toml"
+    path = tmp_path / "test2.toml"
+    orig = loads(orig_path.read_text())
+    copy2(orig_path, path)
+
+    args = [
+        *rwargs,
+        str(path),
+        "lists",
+        "replace",
+        "--type=fnmatch",
+        "mixed.data",
+        "*",
+        "xxxx",
+    ]
+    ran = CliRunner().invoke(app, args, catch_exceptions=False)
+    assert ran.exit_code == 0
+
+    orig["mixed"]["data"] = ["xxxx", 1, "xxxx", 2, "xxxx"]
+    assert loads(path.read_text()) == orig
+
+
+def test_set_lists_replace_regex_first(rwargs, tmp_path: Path):
+    orig_path = TEST_DATA / "test2.toml"
+    path = tmp_path / "test2.toml"
+    orig = loads(orig_path.read_text())
+    copy2(orig_path, path)
+
+    args = [
+        *rwargs,
+        str(path),
+        "lists",
+        "replace",
+        "--first",
+        "lst.data",
+        r"\d",
+        "xxxx",
+    ]
+    ran = CliRunner().invoke(app, args, catch_exceptions=False)
+    assert ran.exit_code == 0
+
+    orig["lst"]["data"] = ["xxxx", "2", "abc", "456"]
+    assert loads(path.read_text()) == orig
+
+
+def test_lists_replace_error(rwargs, tmp_path: Path):
+    orig_path = TEST_DATA / "test2.toml"
+    path = tmp_path / "test2.toml"
+    copy2(orig_path, path)
+
+    args = [*rwargs, str(path), "lists", "replace", "abc.data", "xxx", "xxx"]
+    ran = CliRunner().invoke(app, args, catch_exceptions=False)
+    assert ran.exit_code == 1
+    assert ran.stdout == "You cannot replace values unless the value is a list\n"

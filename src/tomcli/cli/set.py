@@ -6,8 +6,11 @@ from __future__ import annotations
 
 import dataclasses
 import operator
+import re
 import sys
 from collections.abc import Callable, Mapping, MutableMapping, MutableSequence
+from enum import Enum
+from fnmatch import fnmatch
 from typing import Any, List, Optional, TypeVar
 
 if sys.version_info >= (3, 10):
@@ -21,11 +24,18 @@ from tomcli.cli._util import _std_cm, fatal
 from tomcli.toml import Reader, Writer, dump, load
 
 app = Typer(context_settings=dict(help_option_names=["-h", "--help"]))
+lists = Typer(help="Subcommands to manage lists in TOML files")
+app.add_typer(lists, name="lists")
 
 SELECTOR_HELP = (
     "A dot separated map to a key in the TOML mapping."
     " Example: 'section1.subsection.value'"
 )
+
+
+class PATTERN_TYPES(str, Enum):
+    REGEX = "regex"
+    FNMATCH = "fnmatch"
 
 
 @dataclasses.dataclass()
@@ -225,6 +235,55 @@ def _append_callback(cur: MutableMapping[str, Any], part: str, value: list[Any])
             " Use the 'list' subcommand to create a new list"
         )
     lst.extend(value)
+
+
+@lists.command(name="replace")
+def lists_replace(
+    ctx: Context,
+    selector: str = Argument(..., help=SELECTOR_HELP),
+    pattern: str = Argument(..., help="Pattern against which to match strings"),
+    repl: str = Argument(..., help="Replacement string"),
+    pattern_type: PATTERN_TYPES = Option(PATTERN_TYPES.REGEX, "-t", "--type"),
+    first: bool = Option(
+        False, help="Whether to only modify the first match or all matches"
+    ),
+):
+    """
+    Replace string values in a TOML list with other string values.
+    Both Python regex and fnmatch style patterns are supported.
+    """
+    modder: ModderCtx = ctx.ensure_object(ModderCtx)
+    modder.set_default_rw(Reader.TOMLKIT, Writer.TOMLKIT)
+    cb = _repl_match_factory(pattern_type, first, pattern, repl)
+    return set_type(
+        fun_msg=None, modder=modder, selector=selector, value=..., callback=cb
+    )
+
+
+def _repl_match_factory(
+    pattern_type: PATTERN_TYPES, first: bool, pattern: str, repl: str
+) -> Callable[[MutableMapping[str, Any], str], None]:
+    def callback(cur: MutableMapping[str, Any], part: str) -> None:
+        if not isinstance(cur[part], MutableSequence):
+            fatal("You cannot replace values unless the value is a list")
+        lst: MutableSequence[object] = cur[part]
+        for idx, item in enumerate(lst):
+            if not isinstance(item, str):
+                continue
+            current_repl = repl
+            match = False
+            if pattern_type is PATTERN_TYPES.FNMATCH:
+                match = fnmatch(item, pattern)
+            elif pattern_type is PATTERN_TYPES.REGEX:  # noqa: SIM102
+                if matcher := re.fullmatch(pattern, item):
+                    match = True
+                    current_repl = matcher.expand(repl)
+            if match:
+                lst[idx] = current_repl
+                if first:
+                    break
+
+    return callback
 
 
 T = TypeVar("T")
