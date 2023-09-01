@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: MIT
 ---
 
-image: fedora/rawhide
+image: fedora/latest
 packages:
   - mock
   - mock-core-configs
