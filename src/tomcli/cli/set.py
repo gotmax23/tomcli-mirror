@@ -146,7 +146,11 @@ def integer(
 
 
 @app.command(name="float")
-def float_(ctx: Context, selector: str = Argument(...), value: float = Argument(...)):
+def float_(
+    ctx: Context,
+    selector: str = Argument(..., help=SELECTOR_HELP),
+    value: float = Argument(...),
+):
     """
     Set a float value in a TOML file
     """
@@ -167,7 +171,12 @@ def float_(ctx: Context, selector: str = Argument(...), value: float = Argument(
 
 
 @app.command(name="list")
-def lst(ctx: Context, selector: str = Argument(...), value: List[str] = Argument(...)):
+@lists.command(name="str")
+def lst(
+    ctx: Context,
+    selector: str = Argument(..., help=SELECTOR_HELP),
+    value: List[str] = Argument(...),
+):
     """
     Create a list of strings in a TOML file
     """
@@ -190,7 +199,9 @@ def lst(ctx: Context, selector: str = Argument(...), value: List[str] = Argument
 
 @app.command()
 def append(
-    ctx: Context, selector: str = Argument(...), value: List[str] = Argument(...)
+    ctx: Context,
+    selector: str = Argument(..., help=SELECTOR_HELP),
+    value: List[str] = Argument(...),
 ):
     """
     Append strings to an existing list in a TOML file
