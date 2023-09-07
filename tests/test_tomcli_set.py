@@ -201,3 +201,17 @@ def test_lists_replace_error(rwargs, tmp_path: Path):
     ran = CliRunner().invoke(app, args, catch_exceptions=False)
     assert ran.exit_code == 1
     assert ran.stdout == "You cannot replace values unless the value is a list\n"
+
+
+def test_set_lists_delitem_regex(rwargs, tmp_path: Path):
+    orig_path = TEST_DATA / "test2.toml"
+    path = tmp_path / "test2.toml"
+    orig = loads(orig_path.read_text())
+    copy2(orig_path, path)
+
+    args = [*rwargs, str(path), "lists", "delitem", "lst.data", r"\d"]
+    ran = CliRunner().invoke(app, args, catch_exceptions=False)
+    assert ran.exit_code == 0
+
+    orig["lst"]["data"] = ["abc", "456"]
+    assert loads(path.read_text()) == orig

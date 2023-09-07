@@ -237,16 +237,24 @@ def _append_callback(cur: MutableMapping[str, Any], part: str, value: list[Any])
     lst.extend(value)
 
 
+_LISTS_COMMON_ARGS: dict[str, Any] = {
+    "selector": Argument(..., help=SELECTOR_HELP),
+    "pattern": Argument(..., help="Pattern against which to match strings"),
+    "pattern_type": Option(PATTERN_TYPES.REGEX, "-t", "--type"),
+    "first": Option(
+        False, help="Whether to only modify the first match or all matches"
+    ),
+}
+
+
 @lists.command(name="replace")
 def lists_replace(
     ctx: Context,
-    selector: str = Argument(..., help=SELECTOR_HELP),
-    pattern: str = Argument(..., help="Pattern against which to match strings"),
+    selector: str = _LISTS_COMMON_ARGS["selector"],
+    pattern: str = _LISTS_COMMON_ARGS["pattern"],
     repl: str = Argument(..., help="Replacement string"),
-    pattern_type: PATTERN_TYPES = Option(PATTERN_TYPES.REGEX, "-t", "--type"),
-    first: bool = Option(
-        False, help="Whether to only modify the first match or all matches"
-    ),
+    pattern_type: PATTERN_TYPES = _LISTS_COMMON_ARGS["pattern_type"],
+    first: bool = _LISTS_COMMON_ARGS["first"],
 ):
     """
     Replace string values in a TOML list with other string values.
@@ -260,14 +268,36 @@ def lists_replace(
     )
 
 
+@lists.command(name="delitem")
+def lists_delete(
+    ctx: Context,
+    selector: str = _LISTS_COMMON_ARGS["selector"],
+    pattern: str = _LISTS_COMMON_ARGS["pattern"],
+    pattern_type: PATTERN_TYPES = _LISTS_COMMON_ARGS["pattern_type"],
+    first: bool = _LISTS_COMMON_ARGS["first"],
+):
+    """
+    Delete string values in a TOML list.
+    Both Python regex and fnmatch style patterns are supported.
+    """
+    modder: ModderCtx = ctx.ensure_object(ModderCtx)
+    modder.set_default_rw(Reader.TOMLKIT, Writer.TOMLKIT)
+    cb = _repl_match_factory(pattern_type, first, pattern, None)
+    return set_type(
+        fun_msg=None, modder=modder, selector=selector, value=..., callback=cb
+    )
+
+
 def _repl_match_factory(
-    pattern_type: PATTERN_TYPES, first: bool, pattern: str, repl: str
+    pattern_type: PATTERN_TYPES, first: bool, pattern: str, repl: str | None
 ) -> Callable[[MutableMapping[str, Any], str], None]:
     def callback(cur: MutableMapping[str, Any], part: str) -> None:
         if not isinstance(cur[part], MutableSequence):
             fatal("You cannot replace values unless the value is a list")
-        lst: MutableSequence[object] = cur[part]
-        for idx, item in enumerate(lst):
+        lst: list[object] = cur[part]
+        next_idx: int = 0
+        for item in lst.copy():
+            next_idx += 1
             if not isinstance(item, str):
                 continue
             current_repl = repl
@@ -277,9 +307,14 @@ def _repl_match_factory(
             elif pattern_type is PATTERN_TYPES.REGEX:  # noqa: SIM102
                 if matcher := re.fullmatch(pattern, item):
                     match = True
-                    current_repl = matcher.expand(repl)
+                    if repl is not None:
+                        current_repl = matcher.expand(repl)
             if match:
-                lst[idx] = current_repl
+                if repl is None:
+                    del lst[next_idx - 1]
+                    next_idx -= 1
+                else:
+                    lst[next_idx - 1] = current_repl
                 if first:
                     break
 
