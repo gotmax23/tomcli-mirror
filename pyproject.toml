@@ -105,6 +105,11 @@ profile = "black"
 check_untyped_defs = true
 
 
+[tool.coverage.run]
+source = [
+    "tomcli",
+]
+
 [tool.coverage.paths]
 source = [
     "src",
