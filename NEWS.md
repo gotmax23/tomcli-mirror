@@ -6,6 +6,18 @@ SPDX-License-Identifier: MIT
 NEWS
 =======
 
+## 0.3.0 - 2023-09-07 <a id='0.3.0'></a>
+
+### Added
+
+- cli set: add `lists delitem` subcommand
+
+### Fixed
+
+- Fully drop support for Python 3.7.
+  Support for 3.7 was officially removed in the previous release, but the
+  metadata was not updated correctly.
+
 ## 0.2.0 - 2023-09-01 <a id='0.2.0'></a>
 
 ### Added
