@@ -101,6 +101,7 @@ def bump(session: nox.Session):
     version = session.posargs[0]
 
     install(session, RELEASERR, "fclogr")
+    session.run("releaserr", "--version")
 
     session.run("releaserr", "check-tag", version)
     session.run("releaserr", "ensure-clean")
@@ -128,6 +129,8 @@ def bump(session: nox.Session):
 def publish(session: nox.Session):
     # Setup
     install(session, RELEASERR)
+    session.run("releaserr", "--version")
+
     session.run("releaserr", "ensure-clean")
 
     # Upload to PyPI
