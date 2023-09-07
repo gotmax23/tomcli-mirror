@@ -10,7 +10,7 @@ name = "tomcli"
 dynamic = ["version"]
 description = 'CLI for working with TOML files. Pronounced "tom clee."'
 readme = "README.md"
-requires-python = ">=3.7"
+requires-python = ">=3.8"
 license = "MIT"
 license-files.globs = ["LICENSES/*.txt"]
 authors = [
