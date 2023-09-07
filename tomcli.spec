@@ -4,6 +4,12 @@
 # SPDX-License-Identifier: MIT
 # License text: https://spdx.org/licenses/MIT.html
 
+%bcond bootstrap 0
+%bcond tests %{without bootstrap}
+%if %{with tests} && %{with bootstrap}
+%{error:--with tests and --with bootstrap are mutually exclusive}
+%endif
+
 Name:           tomcli
 Version:        0.3.0
 Release:        1%{?dist}
@@ -36,7 +42,11 @@ tomcli is a CLI for working with TOML files. Pronounced "tom clee."
 
 
 %generate_buildrequires
-%pyproject_buildrequires -x all,tomlkit,tomli,test %{?el9:-w}
+%{pyproject_buildrequires %{shrink:
+    %{!?with_bootstrap:-x all,tomlkit,tomli}
+    %{?with_tests:-x test}
+    %{?el9:-w}
+}}
 
 
 %build
@@ -63,7 +73,9 @@ done
 
 
 %check
+%if %{with tests}
 %pytest
+%endif
 
 
 %pyproject_extras_subpkg -n tomcli all tomli tomlkit
