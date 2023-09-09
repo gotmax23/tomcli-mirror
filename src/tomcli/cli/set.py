@@ -180,6 +180,26 @@ def float_(
     )
 
 
+@app.command()
+def true(ctx: Context, selector: str = Argument(..., help=SELECTOR_HELP)):
+    """
+    Set a value to true in a TOML file
+    """
+    modder: ModderCtx = ctx.ensure_object(ModderCtx)
+    modder.set_default_rw(Reader.TOMLKIT, Writer.TOMLKIT)
+    return set_type(default=dict, modder=modder, selector=selector, value=True)
+
+
+@app.command()
+def false(ctx: Context, selector: str = Argument(..., help=SELECTOR_HELP)):
+    """
+    Set a value to false in a TOML file
+    """
+    modder: ModderCtx = ctx.ensure_object(ModderCtx)
+    modder.set_default_rw(Reader.TOMLKIT, Writer.TOMLKIT)
+    return set_type(default=dict, modder=modder, selector=selector, value=False)
+
+
 @app.command(name="list")
 @lists.command(name="str")
 def lst(

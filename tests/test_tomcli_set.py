@@ -215,3 +215,24 @@ def test_set_lists_delitem_regex(rwargs, tmp_path: Path):
 
     orig["lst"]["data"] = ["abc", "456"]
     assert loads(path.read_text()) == orig
+
+
+@pytest.mark.parametrize(
+    "cmd, boolean",
+    [
+        pytest.param("true", True, id="true"),
+        pytest.param("false", False, id="false"),
+    ],
+)
+def test_set_bool(rwargs, tmp_path: Path, cmd: str, boolean: bool):
+    orig_path = TEST_DATA / "test1.toml"
+    path = tmp_path / "test1.toml"
+    orig = loads(orig_path.read_text())
+    copy2(orig_path, path)
+
+    args = [*rwargs, str(path), cmd, "bool_key"]
+    ran = CliRunner().invoke(app, args, catch_exceptions=False)
+    assert ran.exit_code == 0
+
+    orig["bool_key"] = boolean
+    assert loads(path.read_text()) == orig
