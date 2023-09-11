@@ -70,3 +70,11 @@ build-backend = "hatchling.build"
     ]
     assert ran.exit_code == 0
     assert ran.stdout.strip() in valid
+
+
+def test_get_version():
+    from tomcli import __version__ as ver
+
+    ran = typer.testing.CliRunner().invoke(app, ["--version"])
+    assert ran.exit_code == 0
+    assert ran.stdout == ver + "\n"

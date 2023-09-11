@@ -23,3 +23,13 @@ def _std_cm(path: str, dash_stream: IO[AnyStr], mode: str) -> Iterator[IO[AnyStr
 def fatal(*args: object, returncode: int = 1) -> NoReturn:
     print(*args, file=sys.stderr)
     raise Exit(returncode)
+
+
+def version_cb(val: bool):
+    if not val:
+        return
+
+    from tomcli import __version__ as ver
+
+    print(ver)
+    raise Exit

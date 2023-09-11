@@ -8,9 +8,9 @@ import sys
 from collections.abc import Mapping, MutableMapping
 from typing import Any, Optional
 
-from typer import Argument, Typer
+from typer import Argument, Option, Typer
 
-from tomcli.cli._util import _std_cm, fatal
+from tomcli.cli._util import _std_cm, fatal, version_cb
 from tomcli.toml import Reader, Writer, dump, load
 
 app = Typer(context_settings=dict(help_option_names=["-h", "--help"]))
@@ -39,6 +39,7 @@ def get(
     selector: str = Argument("."),
     reader: Optional[Reader] = None,
     writer: Optional[Writer] = None,
+    _: Optional[bool] = Option(None, "--version", is_eager=True, callback=version_cb),
 ):
     # Allow fallback if options are not passed
     allow_fallback_r = not bool(reader)
