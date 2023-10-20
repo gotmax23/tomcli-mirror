@@ -1,6 +1,6 @@
 # Copyright (C) 2023 Maxwell G <maxwell@gtmx.me>
-#
 # SPDX-License-Identifier: MIT
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -70,6 +70,15 @@ build-backend = "hatchling.build"
     ]
     assert ran.exit_code == 0
     assert ran.stdout.strip() in valid
+
+
+def test_get_json_formatter(rwargs: list[str], test_data: Path) -> None:
+    file = str(test_data / "pyproject.toml")
+    args = [*rwargs, "-F", "json", file, "tool.hatch.version"]
+    expected = '{"path": "src/tomcli/__init__.py"}\n'
+    ran = typer.testing.CliRunner().invoke(app, args)
+    assert ran.exit_code == 0
+    assert ran.stdout == expected
 
 
 def test_get_version():

@@ -29,6 +29,7 @@ classifiers = [
 ]
 dependencies = [
     "typer",
+    "importlib_metadata; python_version<'3.11'",
 ]
 
 [project.optional-dependencies]
@@ -84,8 +85,17 @@ Source = "https://git.sr.ht/~gotmax23/tomcli"
 Changelog = "https://git.sr.ht/~gotmax23/tomcli/tree/main/item/NEWS.md"
 
 [project.scripts]
+"tomcli" = "tomcli.cli.main:APP"
 "tomcli-get" = "tomcli.cli.get:app"
 "tomcli-set" = "tomcli.cli.set:app"
+"tomcli-formatters" = "tomcli.cli.formatters:APP"
+
+[project.entry-points."tomcli.formatters"]
+default = "tomcli.formatters.builtin:default_formatter"
+json = "tomcli.formatters.builtin:json_formatter"
+newline-list = "tomcli.formatters.builtin:newline_list_formatter"
+string = "tomcli.formatters.builtin:string_formatter"
+toml = "tomcli.formatters.builtin:toml_formatter"
 
 [tool.hatch.version]
 path = "src/tomcli/__init__.py"

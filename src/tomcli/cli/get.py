@@ -5,13 +5,14 @@
 from __future__ import annotations
 
 import sys
-from collections.abc import Mapping, MutableMapping
+from collections.abc import MutableMapping
 from typing import Any, Optional
 
 from typer import Argument, Option, Typer
 
 from tomcli.cli._util import _std_cm, fatal, version_cb
-from tomcli.toml import Reader, Writer, dump, load
+from tomcli.formatters import DEFAULT_FORMATTER, get_formatter
+from tomcli.toml import Reader, Writer, load
 
 app = Typer(context_settings=dict(help_option_names=["-h", "--help"]))
 
@@ -39,8 +40,12 @@ def get(
     selector: str = Argument("."),
     reader: Optional[Reader] = None,
     writer: Optional[Writer] = None,
+    formatter: str = Option(DEFAULT_FORMATTER, "-F", "--formatter"),
     _: Optional[bool] = Option(None, "--version", is_eager=True, callback=version_cb),
 ):
+    """
+    Query a TOML file
+    """
     # Allow fallback if options are not passed
     allow_fallback_r = not bool(reader)
     allow_fallback_w = not bool(writer)
@@ -49,7 +54,14 @@ def get(
     with _std_cm(path, sys.stdin.buffer, "rb") as fp:
         data = load(fp, reader, allow_fallback_r)
     selected = get_part(data, selector)
-    if isinstance(selected, Mapping):
-        dump(selected, sys.stdout.buffer, writer, allow_fallback_w)
-    else:
-        print(selected)
+    try:
+        formatter_obj = get_formatter(
+            formatter,
+            reader=reader,
+            writer=writer,
+            allow_fallback_r=allow_fallback_r,
+            allow_fallback_w=allow_fallback_w,
+        )
+    except KeyError:
+        fatal(formatter, "is not a valid formatter")
+    print(formatter_obj(selected))

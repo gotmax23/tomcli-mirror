@@ -10,6 +10,11 @@ from typing import IO, AnyStr, NoReturn, cast
 
 from typer import Exit
 
+if sys.version_info >= (3, 9):
+    from typing import Annotated
+else:
+    from typing_extensions import Annotated
+
 
 @contextmanager
 def _std_cm(path: str, dash_stream: IO[AnyStr], mode: str) -> Iterator[IO[AnyStr]]:
@@ -33,3 +38,6 @@ def version_cb(val: bool):
 
     print(ver)
     raise Exit
+
+
+__all__ = ("_std_cm", "fatal", "version_cb", "Annotated")

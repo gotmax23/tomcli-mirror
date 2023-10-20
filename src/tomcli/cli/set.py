@@ -84,6 +84,9 @@ def callback(
     writer: Optional[Writer] = None,
     _: Optional[bool] = Option(None, "--version", is_eager=True, callback=version_cb),
 ):
+    """
+    Modify a TOML file
+    """
     ctx.obj = ModderCtx(path, output or path, reader, writer)
 
 
