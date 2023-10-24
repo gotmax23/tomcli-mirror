@@ -1,21 +1,15 @@
 # Copyright (C) 2023 Maxwell G <maxwell@gtmx.me>
 # SPDX-License-Identifier: MIT
+
 select = [
-    # flake8-builtins
-    "A",
-    # flake8-bugbear
-    "B",
-    # pycodestyle
-    "E",
-    "W",
-    # pyflakes
-    "F",
-    # unused-arguments
-    "ARG",
-    # flake8-simplify
-    "SIM",
-    # pylint
-    "PL",
+    "A",    # flake8-builtins
+    "ARG",  # unused-arguments
+    "B",    # flake8-bugbear
+    "E",    # pycodestyle errors
+    "F",    # pyflakes
+    "PL",   # pylint
+    "SIM",  # flake8-simplify
+    "W",    # pycodestyle warnings
 ]
 ignore = [
     # function-call-in-default-argument
@@ -34,6 +28,10 @@ ignore = [
     "PLR0913",
 ]
 
+src = [
+    "src",
+    "tests",
+]
+
 [extend-per-file-ignores]
 "tests/*" = ["ARG"]
-
