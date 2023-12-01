@@ -45,7 +45,7 @@ def json_formatter(obj) -> str:
     return json.dumps(obj)
 
 
-def newline_list_formatter(obj):
+def newline_list_formatter(obj) -> str:
     """
     Return a newline separated list
     """

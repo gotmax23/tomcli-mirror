@@ -22,7 +22,9 @@ DEFAULT_FORMATTER = "default"
 
 
 class FormatterError(Exception):
-    ...
+    """
+    Error with formatting output
+    """
 
 
 FormatterType = Callable[..., str]
