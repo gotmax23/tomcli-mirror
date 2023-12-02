@@ -10,6 +10,8 @@ from functools import lru_cache, partial
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
+    from typing_extensions import TypeAlias
+
     from tomcli.toml import Reader, Writer
 
 if sys.version_info >= (3, 11):
@@ -27,7 +29,7 @@ class FormatterError(Exception):
     """
 
 
-FormatterType = Callable[..., str]
+FormatterType: TypeAlias = "Callable[..., str]"
 
 
 @lru_cache

@@ -7,16 +7,12 @@ import typer
 
 from tomcli.formatters import get_formatters_list
 
-from ._util import Annotated
-
 APP = typer.Typer(context_settings=dict(help_option_names=["-h", "--help"]))
 
 
 @APP.command()
 def list_formatters(
-    builtin_only: Annotated[
-        bool, typer.Argument(help="Only list builtin formatters")
-    ] = False
+    builtin_only: bool = typer.Option(False, help="Only list builtin formatters")
 ):
     """
     List formatters for use tomcli-get
