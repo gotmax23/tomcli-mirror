@@ -6,6 +6,18 @@ SPDX-License-Identifier: MIT
 NEWS
 =======
 
+## 0.4.0 - 2023-12-02 <a id='0.4.0'></a>
+
+### Added
+
+- cli set: add `true` subcommand
+- cli set: add `false` subcommand
+- cli: add `--version` argument
+- cli: add parent `tomcli` command with `set` and `get` subcommands
+- cli get: add `-F` / `--formatter` arg to customize output
+- cli: add `tomcli-formatters` / `tomcli formatters` command to list
+  available `get` formatters
+
 ## 0.3.0 - 2023-09-07 <a id='0.3.0'></a>
 
 ### Added

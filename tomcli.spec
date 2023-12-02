@@ -11,7 +11,7 @@
 %endif
 
 Name:           tomcli
-Version:        0.3.0
+Version:        0.4.0
 Release:        1%{?dist}
 Summary:        CLI for working with TOML files. Pronounced "tom clee."
 
@@ -94,6 +94,9 @@ done
 
 
 %changelog
+* Sat Dec 02 2023 Maxwell G <maxwell@gtmx.me> - 0.4.0-1
+- Release 0.4.0.
+
 * Thu Sep 07 2023 Maxwell G <maxwell@gtmx.me> - 0.3.0-1
 - Release 0.3.0.
 
