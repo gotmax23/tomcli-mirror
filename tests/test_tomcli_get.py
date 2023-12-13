@@ -10,12 +10,9 @@ import typer.testing
 
 from tomcli.cli.get import app
 
-HERE = Path(__file__).resolve().parent
-ROOT = HERE.parent
 
-
-def test_get_basic_dump(writer: str, reader: str):
-    file = str(ROOT / "pyproject.toml")
+def test_get_basic_dump(writer: str, reader: str, test_data: Path):
+    file = str(test_data / "pyproject.toml")
     args = [
         file,
         "build-system.build-backend",
@@ -28,8 +25,8 @@ def test_get_basic_dump(writer: str, reader: str):
     assert ran.stdout == expected
 
 
-def test_get_invalid_selector(writer: str, reader: str):
-    file = str(ROOT / "pyproject.toml")
+def test_get_invalid_selector(writer: str, reader: str, test_data: Path):
+    file = str(test_data / "pyproject.toml")
     args = [
         file,
         "build-system.abc.xyz",
@@ -44,8 +41,8 @@ def test_get_invalid_selector(writer: str, reader: str):
     assert ran.stdout == expected
 
 
-def test_get_dict_dump(writer: str, reader: str):
-    file = str(ROOT / "pyproject.toml")
+def test_get_dict_dump(writer: str, reader: str, test_data: Path):
+    file = str(test_data / "pyproject.toml")
     args = [
         file,
         "build-system",
