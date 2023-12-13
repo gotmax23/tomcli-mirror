@@ -10,7 +10,7 @@ from typing import Any, Optional
 
 from typer import Argument, Option, Typer
 
-from tomcli.cli._util import _std_cm, fatal, version_cb, split_by_dot
+from tomcli.cli._util import _std_cm, fatal, split_by_dot, version_cb
 from tomcli.formatters import DEFAULT_FORMATTER, get_formatter
 from tomcli.toml import Reader, Writer, load
 

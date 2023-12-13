@@ -20,7 +20,7 @@ else:
 
 from typer import Argument, Context, Option, Typer
 
-from tomcli.cli._util import _std_cm, fatal, version_cb, split_by_dot
+from tomcli.cli._util import _std_cm, fatal, split_by_dot, version_cb
 from tomcli.toml import Reader, Writer, dump, load
 
 app = Typer(context_settings=dict(help_option_names=["-h", "--help"]))
