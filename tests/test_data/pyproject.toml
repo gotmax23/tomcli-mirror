@@ -1,5 +1,4 @@
 # Copyright (C) 2023 Maxwell G <maxwell@gtmx.me>
-#
 # SPDX-License-Identifier: MIT
 
 [build-system]
@@ -9,9 +8,9 @@ build-backend = "hatchling.build"
 [project]
 name = "tomcli"
 dynamic = ["version"]
-description = 'CLI for working with TOML files. Pronounced "tohm-clee."'
+description = 'CLI for working with TOML files. Pronounced "tom clee."'
 readme = "README.md"
-requires-python = ">=3.7"
+requires-python = ">=3.8"
 license = "MIT"
 license-files.globs = ["LICENSES/*.txt"]
 authors = [
@@ -21,15 +20,17 @@ classifiers = [
   "Development Status :: 3 - Alpha",
   "Environment :: Console",
   "Programming Language :: Python",
-  "Programming Language :: Python :: 3.7",
   "Programming Language :: Python :: 3.8",
   "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
   "Typing :: Typed",
 ]
 dependencies = [
     "typer",
+    "more-itertools",
+    "importlib_metadata; python_version<'3.11'",
 ]
 
 [project.optional-dependencies]
@@ -55,29 +56,88 @@ codeqa = [
 ]
 formatters = [
     "black",
-    "ruff",
+    "isort",
 ]
 typing = [
+    "tomcli[tomli]",
+    "tomcli[tomlkit]",
     "mypy",
+    "pytest",
+    "typing_extensions",
+    # For checking noxfile.py
+    "nox",
 ]
 test = [
     "pytest",
 ]
 dev = [
+    "tomcli[all]",
     "tomcli[codeqa]",
     "tomcli[formatters]",
     "tomcli[test]",
-    "hatch",
-    "nox>=2022.11.21",
+    "tomcli[typing]",
+    "nox",
 ]
 
 [project.urls]
-"Source code" = "https://git.sr.ht/~gotmax23/tomcli"
-"Mailing list" = "https://lists.sr.ht/~gotmax23/tomcli"
+Homepage = "https://sr.ht/~gotmax23/tomcli"
+Source = "https://git.sr.ht/~gotmax23/tomcli"
+"Mailing List" = "https://lists.sr.ht/~gotmax23/tomcli"
+Changelog = "https://git.sr.ht/~gotmax23/tomcli/tree/main/item/NEWS.md"
 
 [project.scripts]
+"tomcli" = "tomcli.cli.main:APP"
 "tomcli-get" = "tomcli.cli.get:app"
 "tomcli-set" = "tomcli.cli.set:app"
+"tomcli-formatters" = "tomcli.cli.formatters:APP"
+
+[project.entry-points."tomcli.formatters"]
+default = "tomcli.formatters.builtin:default_formatter"
+json = "tomcli.formatters.builtin:json_formatter"
+newline-list = "tomcli.formatters.builtin:newline_list_formatter"
+string = "tomcli.formatters.builtin:string_formatter"
+toml = "tomcli.formatters.builtin:toml_formatter"
 
 [tool.hatch.version]
 path = "src/tomcli/__init__.py"
+
+
+[tool.pytest.ini_options]
+addopts = [
+    "--import-mode=importlib",
+]
+
+
+[tool.isort]
+profile = "black"
+
+
+[tool.mypy]
+check_untyped_defs = true
+
+
+[tool.coverage.run]
+source = [
+    "tomcli",
+]
+
+[tool.coverage.paths]
+source = [
+    "src",
+    "*/site-packages",
+]
+
+[tool.coverage.report]
+# https://coverage.readthedocs.io/en/latest/excluding.html#advanced-exclusion
+# These should use single quotes in TOML, as they're regular expressions.
+exclude_lines = [
+    'pragma: no cover',
+    'raise NotImplementedError',
+    'if __name__ == .__main__.:',
+    'if TYPE_CHECKING:',
+    'if t\.TYPE_CHECKING:',
+    '@(abc\.)?abstractmethod',
+    '@overload',
+    'except ImportError:',
+]
+
