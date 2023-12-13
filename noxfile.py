@@ -53,7 +53,9 @@ def test(session: nox.Session):
         env["COVERAGE_FILE"] = str(tmp / ".coverage")
 
     install(session, *packages, editable=True)
-    session.run("pytest", *session.posargs, env=env)
+    session.run(
+        "pytest", "src", "tests", "--doctest-modules", *session.posargs, env=env
+    )
 
 
 @nox.session

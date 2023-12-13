@@ -114,11 +114,11 @@ profile = "black"
 [tool.mypy]
 check_untyped_defs = true
 
-
 [tool.coverage.run]
-source = [
-    "tomcli",
+omit = [
+    "tests/*.py",
 ]
+
 
 [tool.coverage.paths]
 source = [
