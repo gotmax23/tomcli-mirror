@@ -102,7 +102,7 @@ def typing(session: nox.Session):
 def bump(session: nox.Session):
     version = session.posargs[0]
 
-    install(session, RELEASERR, "fclogr")
+    install(session, RELEASERR, "fclogr", "flit")
     session.run("releaserr", "--version")
 
     session.run("releaserr", "check-tag", version)
@@ -124,7 +124,7 @@ def bump(session: nox.Session):
     # Bump changelog, commit, and tag
     git(session, "add", SPECFILE, f"src/{PROJECT}/__init__.py")
     session.run("releaserr", "clog", version, "--tag")
-    session.run("releaserr", "build", "--sign", "--backend", "generic", "--isolated")
+    session.run("releaserr", "build", "--sign", "--backend", "flit_core")
 
 
 @nox.session

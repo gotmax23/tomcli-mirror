@@ -2,8 +2,8 @@
 # SPDX-License-Identifier: MIT
 
 [build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
+requires = ["flit_core >=3.2,<4"]
+build-backend = "flit_core.buildapi"
 
 [project]
 name = "tomcli"
@@ -11,8 +11,7 @@ dynamic = ["version"]
 description = 'CLI for working with TOML files. Pronounced "tom clee."'
 readme = "README.md"
 requires-python = ">=3.8"
-license = "MIT"
-license-files.globs = ["LICENSES/*.txt"]
+license.text = "MIT"
 authors = [
   { name = "Maxwell G", email = "maxwell@gtmx.me" },
 ]
@@ -97,9 +96,6 @@ json = "tomcli.formatters.builtin:json_formatter"
 newline-list = "tomcli.formatters.builtin:newline_list_formatter"
 string = "tomcli.formatters.builtin:string_formatter"
 toml = "tomcli.formatters.builtin:toml_formatter"
-
-[tool.hatch.version]
-path = "src/tomcli/__init__.py"
 
 
 [tool.pytest.ini_options]
