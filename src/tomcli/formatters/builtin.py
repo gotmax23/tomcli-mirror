@@ -28,7 +28,7 @@ def toml_formatter(
     """
     Return the TOML mapping of the object
     """
-    return dumps(obj, prefered_writer=writer, allow_fallback=allow_fallback_w)
+    return dumps(obj, prefered_writer=writer, allow_fallback=allow_fallback_w).strip()
 
 
 def string_formatter(obj) -> str:

@@ -29,6 +29,7 @@ classifiers = [
 ]
 dependencies = [
     "typer",
+    "more-itertools",
     "importlib_metadata; python_version<'3.11'",
 ]
 

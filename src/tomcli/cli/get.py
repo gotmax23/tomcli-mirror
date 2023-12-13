@@ -10,7 +10,7 @@ from typing import Any, Optional
 
 from typer import Argument, Option, Typer
 
-from tomcli.cli._util import _std_cm, fatal, version_cb
+from tomcli.cli._util import _std_cm, fatal, version_cb, split_by_dot
 from tomcli.formatters import DEFAULT_FORMATTER, get_formatter
 from tomcli.toml import Reader, Writer, load
 
@@ -22,7 +22,7 @@ def get_part(data: MutableMapping[str, Any], selector: str) -> Any:
         return data
 
     cur = data
-    parts = selector.split(".")
+    parts = list(split_by_dot(selector))
     idx = 0
     try:
         for idx, part in enumerate(parts):  # noqa: B007

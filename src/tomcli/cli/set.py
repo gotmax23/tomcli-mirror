@@ -20,7 +20,7 @@ else:
 
 from typer import Argument, Context, Option, Typer
 
-from tomcli.cli._util import _std_cm, fatal, version_cb
+from tomcli.cli._util import _std_cm, fatal, version_cb, split_by_dot
 from tomcli.toml import Reader, Writer, dump, load
 
 app = Typer(context_settings=dict(help_option_names=["-h", "--help"]))
@@ -391,14 +391,13 @@ def set_type(  # noqa: PLR0913
     """
     data = modder.load()
     cur = data
-    parts = selector.split(".")
+    parts = list(split_by_dot(selector))
     if selector == ".":
         if fun_msg:
             fatal(fun_msg)
         else:
             cur = {"data": cur}
             parts = ["data"]
-    idx = 0
     for idx, part in enumerate(parts):
         if idx + 1 == len(parts):
             break

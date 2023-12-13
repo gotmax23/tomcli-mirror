@@ -87,3 +87,18 @@ def test_get_version():
     ran = typer.testing.CliRunner().invoke(app, ["--version"])
     assert ran.exit_code == 0
     assert ran.stdout == ver + "\n"
+
+
+def test_get_with_dots(rwargs: list[str], test_data: Path) -> None:
+    file = str(test_data / "pyproject.toml")
+    args = [
+        *rwargs,
+        "-F",
+        "default",
+        file,
+        'project.entry-points."tomcli.formatters".default',
+    ]
+    expected = "tomcli.formatters.builtin:default_formatter\n"
+    ran = typer.testing.CliRunner().invoke(app, args)
+    assert ran.exit_code == 0
+    assert ran.stdout == expected
