@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import glob
 import os
 from glob import iglob
 from pathlib import Path
@@ -23,7 +24,7 @@ LINT_FILES = (f"src/{PROJECT}", "tests/", "noxfile.py")
 RELEASERR = "releaserr[all] @ git+https://git.sr.ht/~gotmax23/releaserr"
 # RELEASERR = "-e../releaserr[all]"
 
-nox.options.sessions = (*LINT_SESSIONS, "test")
+nox.options.sessions = (*LINT_SESSIONS, "covtest")
 
 
 # Helpers
@@ -64,6 +65,13 @@ def coverage(session: nox.Session):
     session.run("coverage", "combine", "--keep", *iglob(".nox/test*/tmp/.coverage"))
     session.run("coverage", "html")
     session.run("coverage", "report", "--fail-under=95")
+
+
+@nox.session()
+def covtest(session: nox.Session):
+    session.run("rm", *glob.iglob(".nox/*/tmp/.coverage*"), external=True)
+    session.notify("test", ["--cov"])
+    session.notify("coverage")
 
 
 @nox.session(venv_backend="none")
