@@ -22,9 +22,9 @@ tasks:
   - copr-webhook: |
       cd tomcli
       releaserr copr-webhook ~/.copr-dev-hook --branch origin/main --skip-if-missing
-  - nox-test: |
+  - nox-covtest: |
       cd tomcli
-      nox -e test
+      nox -e covtest
   - nox-lint: |
       cd tomcli
       nox -e lint
