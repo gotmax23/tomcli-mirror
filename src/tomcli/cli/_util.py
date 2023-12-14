@@ -12,9 +12,9 @@ from types import SimpleNamespace
 from typing import IO, TYPE_CHECKING, Any, AnyStr, NoReturn, TypeVar, cast
 
 import click
-from more_itertools import peekable
 
 from tomcli import __version__ as _ver
+from tomcli._peekable import peekable
 from tomcli.formatters import DEFAULT_FORMATTER
 from tomcli.toml import Reader, Writer
 

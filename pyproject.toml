@@ -28,7 +28,6 @@ classifiers = [
 ]
 dependencies = [
     "click",
-    "more-itertools",
     "importlib_metadata; python_version<'3.11'",
 ]
 
@@ -113,6 +112,7 @@ check_untyped_defs = true
 [tool.coverage.run]
 omit = [
     "tests/*.py",
+    "src/tomcli/_peekable.py",
 ]
 
 
