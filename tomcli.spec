@@ -10,6 +10,14 @@
 %{error:--with tests and --with bootstrap are mutually exclusive}
 %endif
 
+# Add minimal py3_test_envvars for EPEL 9
+%if %{undefined py3_test_envvars}
+%define py3_test_envvars %{shrink:
+PYTHONPATH=%{buildroot}%{python3_sitelib}
+PATH=%{buildroot}%{_bindir}:${PATH}
+}
+%endif
+
 Name:           tomcli
 Version:        0.4.0
 Release:        1%{?dist}
