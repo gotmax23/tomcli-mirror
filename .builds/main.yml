@@ -9,6 +9,7 @@ packages:
   - python3.9
   - python3.10-devel
   - python3.11-devel
+  - python3.12-devel
 sources:
   - https://git.sr.ht/~gotmax23/tomcli
 secrets:
