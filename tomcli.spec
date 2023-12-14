@@ -72,6 +72,19 @@ export %{py3_test_envvars}
 
 
 %check
+# Smoke test
+(
+export %{py3_test_envvars}
+cp pyproject.toml test.toml
+name="$(tomcli-get test.toml project.name)"
+test "${name}" = "tomcli"
+
+tomcli-set test.toml str project.name not-tomcli
+newname="$(tomcli-get test.toml project.name)"
+test "${newname}" = "not-tomcli"
+)
+
+%pyproject_check_import
 %if %{with tests}
 %pytest
 %endif
