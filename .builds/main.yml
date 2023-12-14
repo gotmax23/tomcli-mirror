@@ -23,8 +23,8 @@ tasks:
       releaserr copr-webhook ~/.copr-dev-hook --branch origin/main --skip-if-missing
   - nox-test: |
       cd tomcli
-      nox -v -e test
+      nox -e test
   - nox-lint: |
       cd tomcli
-      nox -v -e lint
+      nox -e lint
 
