@@ -43,7 +43,8 @@ tomcli is a CLI for working with TOML files. Pronounced "tom clee."
 
 %generate_buildrequires
 %{pyproject_buildrequires %{shrink:
-    %{!?with_bootstrap:-x all,tomlkit,tomli}
+    -x tomli
+    %{!?with_bootstrap:-x all,tomlkit}
     %{?with_tests:-x test}
 }}
 
