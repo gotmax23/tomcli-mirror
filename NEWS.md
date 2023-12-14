@@ -6,6 +6,23 @@ SPDX-License-Identifier: MIT
 NEWS
 =======
 
+## 0.5.0 - 2023-12-14 <a id='0.5.0'></a>
+
+### Added
+
+- README.md: add usage examples
+- tomcli.spec: add smoke tests
+- tomcli.spec: add minimal py3_test_envvars def for EPEL 9
+
+### Changed
+
+- build: use flit_core instead of hatchling as build backend
+- cli: use click instead of typer as CLI framework
+
+### Fixed
+
+- cli: allow accessing keys containing dots
+
 ## 0.4.0 - 2023-12-02 <a id='0.4.0'></a>
 
 ### Added
