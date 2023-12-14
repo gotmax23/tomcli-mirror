@@ -11,26 +11,27 @@ import sys
 from collections.abc import Callable, Mapping, MutableMapping, MutableSequence
 from enum import Enum
 from fnmatch import fnmatch
-from typing import Any, List, Optional, TypeVar
+from types import SimpleNamespace
+from typing import Any, TypeVar
 
 if sys.version_info >= (3, 10):
     from types import EllipsisType
 else:
     EllipsisType = type(Ellipsis)
 
-from typer import Argument, Context, Option, Typer
+import click
 
-from tomcli.cli._util import _std_cm, fatal, split_by_dot, version_cb
-from tomcli.toml import Reader, Writer, dump, load
-
-app = Typer(context_settings=dict(help_option_names=["-h", "--help"]))
-lists = Typer(help="Subcommands to manage lists in TOML files")
-app.add_typer(lists, name="lists")
-
-SELECTOR_HELP = (
-    "A dot separated map to a key in the TOML mapping."
-    " Example: 'section1.subsection.value'"
+from tomcli.cli._util import (
+    DEFAULT_CONTEXT_SETTINGS,
+    SHARED_PARAMS,
+    RWEnumChoice,
+    SharedArg,
+    _std_cm,
+    add_args_and_help,
+    fatal,
+    split_by_dot,
 )
+from tomcli.toml import Reader, Writer, dump, load
 
 
 class PATTERN_TYPES(str, Enum):
@@ -66,34 +67,49 @@ class ModderCtx:
             dump(__data, fp, self.writer, self.allow_fallback_w)
 
 
-@app.callback()
-def callback(
-    ctx: Context,
-    path: str = Argument(
-        ..., help="Path to a TOML file to read. Use '-' to read from stdin."
-    ),
-    output: Optional[str] = Option(
-        None,
-        "-o",
-        "--output",
-        help="Where to output the data."
-        " Defaults to outputting in place."
-        " Use '-' to write to stdout.",
-    ),
-    reader: Optional[Reader] = None,
-    writer: Optional[Writer] = None,
-    _: Optional[bool] = Option(None, "--version", is_eager=True, callback=version_cb),
+@click.group(name="set", context_settings=DEFAULT_CONTEXT_SETTINGS)
+@SHARED_PARAMS.version
+@SHARED_PARAMS.path
+@click.option(
+    "-o",
+    "--output",
+    default=None,
+    help="Where to output the data."
+    " Defaults to outputting in place."
+    " Use '-' to write to stdout.",
+)
+@SHARED_PARAMS.reader
+@SHARED_PARAMS.writer
+@click.pass_context
+def cli(
+    context: click.Context,
+    path: str,
+    output: str,
+    reader: Reader | None,
+    writer: Writer | None,
 ):
     """
     Modify a TOML file
     """
-    ctx.obj = ModderCtx(path, output or path, reader, writer)
+    if context.resilient_parsing:
+        return
+    context.obj = ModderCtx(path, output or path, reader, writer)
 
 
-@app.command(name="del")
+@cli.group(name="lists")
+def lsts():
+    """
+    Subcommands for creating and modifying lists
+    """
+    ...
+
+
+@cli.command(name="del")
+@click.pass_context
+@add_args_and_help(SHARED_PARAMS.selector)
 def delete(
-    ctx: Context,
-    selector: str = Argument(..., help=SELECTOR_HELP),
+    ctx: click.Context,
+    selector: str,
 ):
     """
     Delete a value from a TOML file.
@@ -106,12 +122,10 @@ def delete(
     )
 
 
-@app.command(name="str")
-def string(
-    ctx: Context,
-    selector: str = Argument(..., help=SELECTOR_HELP),
-    value: str = Argument(...),
-):
+@cli.command(name="str")
+@click.pass_context
+@add_args_and_help(SHARED_PARAMS.selector, click.argument("value"))
+def string(ctx: click.Context, selector: str, value: str):
     """
     Set a string value in a TOML file
     """
@@ -131,12 +145,10 @@ def string(
     )
 
 
-@app.command(name="int")
-def integer(
-    ctx: Context,
-    selector: str = Argument(..., help=SELECTOR_HELP),
-    value: str = Argument(...),
-):
+@cli.command(name="int")
+@click.pass_context
+@add_args_and_help(SHARED_PARAMS.selector, click.argument("value"))
+def integer(ctx: click.Context, selector: str, value: str):
     """
     Set an integer value in a TOML file
     """
@@ -159,12 +171,10 @@ def integer(
     )
 
 
-@app.command(name="float")
-def float_(
-    ctx: Context,
-    selector: str = Argument(..., help=SELECTOR_HELP),
-    value: float = Argument(...),
-):
+@cli.command(name="float")
+@click.pass_context
+@add_args_and_help(SHARED_PARAMS.selector, click.argument("value"))
+def float_(ctx: click.Context, selector: str, value: str):
     """
     Set a float value in a TOML file
     """
@@ -184,8 +194,10 @@ def float_(
     )
 
 
-@app.command()
-def true(ctx: Context, selector: str = Argument(..., help=SELECTOR_HELP)):
+@cli.command(name="true")
+@click.pass_context
+@add_args_and_help(SHARED_PARAMS.selector)
+def true(ctx: click.Context, selector: str):
     """
     Set a value to true in a TOML file
     """
@@ -194,8 +206,10 @@ def true(ctx: Context, selector: str = Argument(..., help=SELECTOR_HELP)):
     return set_type(default=dict, modder=modder, selector=selector, value=True)
 
 
-@app.command()
-def false(ctx: Context, selector: str = Argument(..., help=SELECTOR_HELP)):
+@cli.command(name="false")
+@click.pass_context
+@add_args_and_help(SHARED_PARAMS.selector)
+def false(ctx: click.Context, selector: str):
     """
     Set a value to false in a TOML file
     """
@@ -204,13 +218,10 @@ def false(ctx: Context, selector: str = Argument(..., help=SELECTOR_HELP)):
     return set_type(default=dict, modder=modder, selector=selector, value=False)
 
 
-@app.command(name="list")
-@lists.command(name="str")
-def lst(
-    ctx: Context,
-    selector: str = Argument(..., help=SELECTOR_HELP),
-    value: List[str] = Argument(...),
-):
+@cli.command(name="list")
+@click.pass_context
+@add_args_and_help(SHARED_PARAMS.selector, click.argument("value", nargs=-1))
+def lst(ctx: click.Context, selector: str, value: tuple[str, ...]):
     """
     Create a list of strings in a TOML file
     """
@@ -231,12 +242,13 @@ def lst(
     )
 
 
-@app.command()
-def append(
-    ctx: Context,
-    selector: str = Argument(..., help=SELECTOR_HELP),
-    value: List[str] = Argument(...),
-):
+lsts.add_command(lst, name="str")
+
+
+@cli.command()
+@click.pass_context
+@add_args_and_help(SHARED_PARAMS.selector, click.argument("value"))
+def append(ctx: click.Context, selector: str, value: str):
     """
     Append strings to an existing list in a TOML file
     """
@@ -261,24 +273,42 @@ def _append_callback(cur: MutableMapping[str, Any], part: str, value: list[Any])
     lst.extend(value)
 
 
-_LISTS_COMMON_ARGS: dict[str, Any] = {
-    "selector": Argument(..., help=SELECTOR_HELP),
-    "pattern": Argument(..., help="Pattern against which to match strings"),
-    "pattern_type": Option(PATTERN_TYPES.REGEX, "-t", "--type"),
-    "first": Option(
-        False, help="Whether to only modify the first match or all matches"
+_LISTS_COMMON_ARGS = SimpleNamespace(
+    pattern=SharedArg(
+        click.argument("pattern"),
+        help="Pattern against which to match strings",
     ),
-}
+    pattern_type=click.option(
+        "-t",
+        "--type",
+        "pattern_type",
+        default=PATTERN_TYPES.REGEX,
+        type=RWEnumChoice(PATTERN_TYPES),
+    ),
+    first=click.option(
+        "--first / --no-first",
+        default=False,
+        help="Whether to only modify the first match or all matches",
+    ),
+)
 
 
-@lists.command(name="replace")
+@lsts.command(name="replace")
+@click.pass_context
+@_LISTS_COMMON_ARGS.pattern_type
+@_LISTS_COMMON_ARGS.first
+@add_args_and_help(
+    SHARED_PARAMS.selector,
+    _LISTS_COMMON_ARGS.pattern,
+    SharedArg(click.argument("repl"), help="Replacement string"),
+)
 def lists_replace(
-    ctx: Context,
-    selector: str = _LISTS_COMMON_ARGS["selector"],
-    pattern: str = _LISTS_COMMON_ARGS["pattern"],
-    repl: str = Argument(..., help="Replacement string"),
-    pattern_type: PATTERN_TYPES = _LISTS_COMMON_ARGS["pattern_type"],
-    first: bool = _LISTS_COMMON_ARGS["first"],
+    ctx: click.Context,
+    selector: str,
+    pattern: str,
+    repl: str,
+    pattern_type: PATTERN_TYPES,
+    first: bool,
 ):
     """
     Replace string values in a TOML list with other string values.
@@ -292,13 +322,17 @@ def lists_replace(
     )
 
 
-@lists.command(name="delitem")
+@lsts.command(name="delitem")
+@click.pass_context
+@_LISTS_COMMON_ARGS.pattern_type
+@_LISTS_COMMON_ARGS.first
+@add_args_and_help(SHARED_PARAMS.selector, _LISTS_COMMON_ARGS.pattern)
 def lists_delete(
-    ctx: Context,
-    selector: str = _LISTS_COMMON_ARGS["selector"],
-    pattern: str = _LISTS_COMMON_ARGS["pattern"],
-    pattern_type: PATTERN_TYPES = _LISTS_COMMON_ARGS["pattern_type"],
-    first: bool = _LISTS_COMMON_ARGS["first"],
+    ctx: click.Context,
+    selector: str,
+    pattern: str,
+    pattern_type: PATTERN_TYPES,
+    first: bool,
 ):
     """
     Delete string values in a TOML list.
@@ -411,3 +445,6 @@ def set_type(  # noqa: PLR0913
     if selector == ".":
         data = data["data"]
     modder.dump(data)
+
+
+app = cli

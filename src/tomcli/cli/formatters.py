@@ -3,17 +3,21 @@
 
 from __future__ import annotations
 
-import typer
+import click
 
 from tomcli.formatters import get_formatters_list
 
-APP = typer.Typer(context_settings=dict(help_option_names=["-h", "--help"]))
+from ._util import DEFAULT_CONTEXT_SETTINGS, SHARED_PARAMS
 
 
-@APP.command()
-def list_formatters(
-    builtin_only: bool = typer.Option(False, help="Only list builtin formatters")
-):
+@click.command(name="formatters", context_settings=DEFAULT_CONTEXT_SETTINGS)
+@SHARED_PARAMS.version
+@click.option(
+    "--builtin-only / --no-builtin-only",
+    default=False,
+    help="Only list builtin formatters",
+)
+def list_formatters(builtin_only: bool):
     """
     List formatters for use tomcli-get
     """
@@ -28,3 +32,6 @@ def list_formatters(
             item += docs + "\n"
         items.append(item)
     print("\n".join(items))
+
+
+APP = list_formatters

@@ -20,7 +20,7 @@ ALLOW_EDITABLE = os.environ.get("ALLOW_EDITABLE", str(not IN_CI)).lower() in (
 PROJECT = "tomcli"
 SPECFILE = "tomcli.spec"
 LINT_SESSIONS = ("formatters", "codeqa", "typing")
-LINT_FILES = (f"src/{PROJECT}", "tests/", "noxfile.py")
+LINT_FILES = (f"src/{PROJECT}", "tests/", "noxfile.py", "compgen.py")
 RELEASERR = "releaserr[all] @ git+https://git.sr.ht/~gotmax23/releaserr"
 # RELEASERR = "-e../releaserr[all]"
 

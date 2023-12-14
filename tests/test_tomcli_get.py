@@ -5,8 +5,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import typer
-import typer.testing
+from click.testing import CliRunner
 
 from tomcli.cli.get import app
 
@@ -19,7 +18,7 @@ def test_get_basic_dump(writer: str, reader: str, test_data: Path):
         f"--writer={writer}",
         f"--reader={reader}",
     ]
-    ran = typer.testing.CliRunner().invoke(app, args, catch_exceptions=False)
+    ran = CliRunner().invoke(app, args, catch_exceptions=False)
     expected = "hatchling.build\n"
     assert ran.exit_code == 0
     assert ran.stdout == expected
@@ -33,7 +32,7 @@ def test_get_invalid_selector(writer: str, reader: str, test_data: Path):
         f"--writer={writer}",
         f"--reader={reader}",
     ]
-    ran = typer.testing.CliRunner().invoke(app, args)
+    ran = CliRunner().invoke(app, args)
     expected = (
         "Invalid selector 'build-system.abc.xyz': could not find 'build-system.abc'\n"
     )
@@ -49,7 +48,7 @@ def test_get_dict_dump(writer: str, reader: str, test_data: Path):
         f"--writer={writer}",
         f"--reader={reader}",
     ]
-    ran = typer.testing.CliRunner().invoke(app, args)
+    ran = CliRunner().invoke(app, args)
     valid = [
         i.strip()
         for i in (
@@ -73,7 +72,7 @@ def test_get_json_formatter(rwargs: list[str], test_data: Path) -> None:
     file = str(test_data / "pyproject.toml")
     args = [*rwargs, "-F", "json", file, "tool.hatch.version"]
     expected = '{"path": "src/tomcli/__init__.py"}\n'
-    ran = typer.testing.CliRunner().invoke(app, args)
+    ran = CliRunner().invoke(app, args)
     assert ran.exit_code == 0
     assert ran.stdout == expected
 
@@ -81,7 +80,7 @@ def test_get_json_formatter(rwargs: list[str], test_data: Path) -> None:
 def test_get_version():
     from tomcli import __version__ as ver
 
-    ran = typer.testing.CliRunner().invoke(app, ["--version"])
+    ran = CliRunner().invoke(app, ["--version"])
     assert ran.exit_code == 0
     assert ran.stdout == ver + "\n"
 
@@ -96,6 +95,6 @@ def test_get_with_dots(rwargs: list[str], test_data: Path) -> None:
         'project.entry-points."tomcli.formatters".default',
     ]
     expected = "tomcli.formatters.builtin:default_formatter\n"
-    ran = typer.testing.CliRunner().invoke(app, args)
+    ran = CliRunner().invoke(app, args)
     assert ran.exit_code == 0
     assert ran.stdout == expected

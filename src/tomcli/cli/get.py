@@ -6,15 +6,22 @@ from __future__ import annotations
 
 import sys
 from collections.abc import MutableMapping
-from typing import Any, Optional
+from typing import Any
 
-from typer import Argument, Option, Typer
+import click
 
-from tomcli.cli._util import _std_cm, fatal, split_by_dot, version_cb
-from tomcli.formatters import DEFAULT_FORMATTER, get_formatter
+from tomcli.cli._util import (
+    DEFAULT_CONTEXT_SETTINGS,
+    SELECTOR_HELP,
+    SHARED_PARAMS,
+    SharedArg,
+    _std_cm,
+    add_args_and_help,
+    fatal,
+    split_by_dot,
+)
+from tomcli.formatters import get_formatter
 from tomcli.toml import Reader, Writer, load
-
-app = Typer(context_settings=dict(help_option_names=["-h", "--help"]))
 
 
 def get_part(data: MutableMapping[str, Any], selector: str) -> Any:
@@ -34,14 +41,21 @@ def get_part(data: MutableMapping[str, Any], selector: str) -> Any:
     return cur
 
 
-@app.command()
+@click.command(name="get", context_settings=DEFAULT_CONTEXT_SETTINGS)
+@SHARED_PARAMS.version
+@SHARED_PARAMS.writer
+@SHARED_PARAMS.reader
+@SHARED_PARAMS.formatter
+@add_args_and_help(
+    SHARED_PARAMS.path,
+    SharedArg(click.argument("selector", default="."), help=SELECTOR_HELP),
+)
 def get(
-    path: str = Argument(...),
-    selector: str = Argument("."),
-    reader: Optional[Reader] = None,
-    writer: Optional[Writer] = None,
-    formatter: str = Option(DEFAULT_FORMATTER, "-F", "--formatter"),
-    _: Optional[bool] = Option(None, "--version", is_eager=True, callback=version_cb),
+    path: str,
+    selector: str,
+    reader: Reader | None,
+    writer: Writer | None,
+    formatter: str,
 ):
     """
     Query a TOML file
@@ -65,3 +79,6 @@ def get(
     except KeyError:
         fatal(formatter, "is not a valid formatter")
     print(formatter_obj(selected))
+
+
+app = get

@@ -27,7 +27,7 @@ classifiers = [
   "Typing :: Typed",
 ]
 dependencies = [
-    "typer",
+    "click",
     "more-itertools",
     "importlib_metadata; python_version<'3.11'",
 ]
@@ -35,7 +35,6 @@ dependencies = [
 [project.optional-dependencies]
 # User facing
 all = [
-    "typer[all]",
     # Keep in sync with tomlkit extra.
     # We can't use self-referntial extras in Fedora.
     "tomlkit",

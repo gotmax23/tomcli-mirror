@@ -61,13 +61,12 @@ mkdir -p %{buildroot}%{fish_completions_dir}
 mkdir -p %{buildroot}%{zsh_completions_dir}
 
 (
-export PYTHONPATH="%{buildroot}%{python3_sitelib}"
-export _TYPER_COMPLETE_TEST_DISABLE_SHELL_DETECTION=1
-for command in %{buildroot}%{_bindir}/tomcli*; do
-    $command --show-completion=bash > "%{buildroot}%{bash_completions_dir}/$(basename $command)"
-    $command --show-completion=fish > "%{buildroot}%{fish_completions_dir}/$(basename $command).fish"
-    $command --show-completion=zsh > "%{buildroot}%{zsh_completions_dir}/_$(basename $command)"
-done
+export %{py3_test_envvars}
+%{python3} compgen.py \
+    --installroot %{buildroot} \
+    --bash-dir %{bash_completions_dir} \
+    --fish-dir %{fish_completions_dir} \
+    --zsh-dir %{zsh_completions_dir}
 )
 
 

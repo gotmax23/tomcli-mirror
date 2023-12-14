@@ -3,25 +3,22 @@
 
 from __future__ import annotations
 
-from typing import Optional
+import click
 
-import typer
+from tomcli import __version__ as _ver
 
 from . import formatters
 from . import get as get_cmd
 from . import set as set_cmd
-from ._util import version_cb
-
-APP = typer.Typer(context_settings=dict(help_option_names=["-h", "--help"]))
-APP.command("get")(get_cmd.get)
-APP.add_typer(set_cmd.app, name="set")
-APP.command("formatters")(formatters.list_formatters)
+from ._util import DEFAULT_CONTEXT_SETTINGS
 
 
-@APP.callback()
-def callback(
-    _: Optional[bool] = typer.Option(
-        None, "--version", is_eager=True, callback=version_cb
-    ),
-):
-    pass
+@click.group(context_settings=DEFAULT_CONTEXT_SETTINGS)
+@click.version_option(_ver, message="%(version)s")
+def APP():
+    ...
+
+
+APP.add_command(get_cmd.app)
+APP.add_command(set_cmd.app)
+APP.add_command(formatters.APP)

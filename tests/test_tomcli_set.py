@@ -7,7 +7,7 @@ from pathlib import Path
 from shutil import copy2
 
 import pytest
-from typer.testing import CliRunner
+from click.testing import CliRunner
 
 from tomcli.cli.set import app
 from tomcli.toml import load, loads

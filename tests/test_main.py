@@ -3,7 +3,7 @@
 
 from __future__ import annotations
 
-from typer.testing import CliRunner
+from click.testing import CliRunner
 
 from tomcli.cli.main import APP
 
