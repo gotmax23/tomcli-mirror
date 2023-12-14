@@ -8,6 +8,7 @@ from collections.abc import Callable, Iterator
 from contextlib import contextmanager
 from dataclasses import dataclass
 from enum import Enum
+from textwrap import dedent
 from types import SimpleNamespace
 from typing import IO, TYPE_CHECKING, Any, AnyStr, NoReturn, TypeVar, cast
 
@@ -145,7 +146,8 @@ def add_args_and_help(
             if isinstance(param, SharedArg) and param.help:
                 phelp += f": {param.help}"
             helps.append(phelp)
-        func.__doc__ = func.__doc__ + "\n\n" if func.__doc__ else ""
+        helps.reverse()
+        func.__doc__ = dedent(func.__doc__) + "\n\n" if func.__doc__ else ""
         func.__doc__ += "\n\n".join(helps)
         return func
 
