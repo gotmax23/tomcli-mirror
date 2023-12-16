@@ -5,7 +5,8 @@ from __future__ import annotations
 
 import click
 
-from tomcli import __version__ as _ver, __doc__ as _doc
+from tomcli import __doc__ as _doc
+from tomcli import __version__ as _ver
 
 from . import formatters
 from . import get as get_cmd
