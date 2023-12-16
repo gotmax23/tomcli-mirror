@@ -91,8 +91,6 @@ def cli(
     """
     Modify a TOML file
     """
-    if context.resilient_parsing:
-        return
     context.obj = ModderCtx(path, output or path, reader, writer)
 
 
