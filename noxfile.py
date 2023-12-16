@@ -20,7 +20,13 @@ ALLOW_EDITABLE = os.environ.get("ALLOW_EDITABLE", str(not IN_CI)).lower() in (
 PROJECT = "tomcli"
 SPECFILE = "tomcli.spec"
 LINT_SESSIONS = ("formatters", "codeqa", "typing")
-LINT_FILES = (f"src/{PROJECT}", "tests/", "noxfile.py", "compgen.py")
+LINT_FILES = (
+    f"src/{PROJECT}",
+    "tests/",
+    "noxfile.py",
+    "compgen.py",
+    "doc/mkdocs_mangen.py",
+)
 RELEASERR = "releaserr[all] @ git+https://git.sr.ht/~gotmax23/releaserr"
 # RELEASERR = "-e../releaserr[all]"
 
@@ -104,7 +110,7 @@ def formatters(session: nox.Session):
 
 @nox.session
 def typing(session: nox.Session):
-    install(session, ".[typing]", editable=True)
+    install(session, ".[typing]", "-r", "doc/requirements.in", editable=True)
     session.run("mypy", *LINT_FILES)
 
 

@@ -1,0 +1,67 @@
+---
+# Copyright (C) 2023 Maxwell G <maxwell@gtmx.me>
+# SPDX-License-Identifier: MIT
+
+site_name: tomcli
+repo_url: "https://git.sr.ht/~gotmax23/tomcli/tree/main"
+edit_uri: "item/doc"
+repo_name: "sr.ht/~gotmax23/tomcli"
+docs_dir: doc
+theme:
+  name: material
+  font: false
+  icon:
+    repo: "fontawesome/regular/circle"
+    edit: "material/eye"
+  features:
+    - content.code.copy
+    - content.action.edit
+    - navigation.sections
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      primary: pink
+      accent: pink
+      scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: pink
+      accent: pink
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+markdown_extensions:
+  - admonition
+  - toc:
+      permalink: true
+  - tables
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.magiclink
+  - pymdownx.superfences
+plugins:
+  - exclude:
+      glob:
+        - "tomcli*.1"
+        - "tomcli*.1.scd"
+        - "*.py"
+        - "requirements.*"
+        - "venv/**"
+  - gen-files:
+      scripts:
+        - doc/mkdocs_mangen.py
+watch:
+  - README.md
+  - NEWS.md
+  - doc/
+  - mkdocs.yml
+nav:
+  - Home: "index.md"
+  - News: "news.md"
+  - Subcommands:
+      - get: tomcli-get1.md
+      - formatters: tomcli-formatters1.md
+      - set: tomcli-set1.md
+      - set-lists: tomcli-set-lists1.md
