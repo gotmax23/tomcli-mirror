@@ -24,7 +24,8 @@ tasks:
       releaserr copr-webhook ~/.copr-dev-hook --branch origin/main --skip-if-missing
   - nox-covtest: |
       cd tomcli
-      nox -e covtest
+      # TODO(gotmax23): Figure out why coverage is wrong without editable mode
+      ALLOW_EDITABLE=1 nox -e covtest
   - nox-lint: |
       cd tomcli
       nox -e lint
