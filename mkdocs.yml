@@ -61,7 +61,8 @@ nav:
   - Home: "index.md"
   - News: "news.md"
   - Subcommands:
-      - get: tomcli-get1.md
-      - formatters: tomcli-formatters1.md
-      - set: tomcli-set1.md
-      - set-lists: tomcli-set-lists1.md
+      - tomcli: tomcli1.md
+      - tomcli-get: tomcli-get1.md
+      - tomcli-formatters: tomcli-formatters1.md
+      - tomcli-set: tomcli-set1.md
+      - tomcli-set-lists: tomcli-set-lists1.md
