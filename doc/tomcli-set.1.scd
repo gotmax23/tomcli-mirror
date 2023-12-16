@@ -6,9 +6,9 @@ tomcli-set -- CLI for working with TOML files. Pronounced "tom clee."
 
 # SYNOPSIS
 
-*\[tomcli-set \| tomcli set]* [GLOBAL OPTIONS] PATH lists COMMAND [ARGUMENTS]
+*\[tomcli-set \| tomcli set]* [GLOBAL OPTIONS] PATH COMMAND [ARGUMENTS]
 
-*\[tomcli-set \| tomcli set]* ... lists [COMMAND] --help
+*\[tomcli-set \| tomcli set]* ... [COMMAND] --help
 
 
 # DESCRIPTION
@@ -41,7 +41,7 @@ The *tomcli-set* subcommand supports modifying TOML files.
 Add a string value to a TOML list
 
 ```
-tomcli-set [GLOBAL OPTIONS] PATH append SELECTOR VALUE [OPTIONS]
+tomcli-set [GLOBAL OPTIONS] PATH append [OPTIONS] SELECTOR VALUE
 tomcli-set ... append --help
 ```
 
@@ -59,7 +59,7 @@ tomcli-set ... del --help
 Set a value in a TOML file to *true* or *false*.
 
 ```
-tomcli-set [GLOBAL OPTIONS] PATH [true | false] SELECTOR [OPTIONS]
+tomcli-set [GLOBAL OPTIONS] PATH [true | false] [OPTIONS] SELECTOR
 tomcli-set ... [true | false] --help
 ```
 
@@ -69,7 +69,7 @@ tomcli-set ... [true | false] --help
 Set a string or integer or float value in a TOML file.
 
 ```
-tomcli-set [GLOBAL OPTIONS] PATH [str|int|float] SELECTOR [OPTIONS]
+tomcli-set [GLOBAL OPTIONS] PATH [str|int|float] [OPTIONS] SELECTOR
 tomcli-set ... [str|int|float] --help
 ```
 

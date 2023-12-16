@@ -6,9 +6,9 @@ tomcli-set lists -- CLI for working with TOML files. Pronounced "tom clee."
 
 # SYNOPSIS
 
-*\[tomcli-set \| tomcli set]* [GLOBAL OPTIONS] PATH COMMAND [ARGUMENTS]
+*\[tomcli-set \| tomcli set]* [GLOBAL OPTIONS] PATH lists COMMAND [OPTIONS] [ARGUMENTS]
 
-*\[tomcli-set \| tomcli set]* ... [COMMAND] --help
+*\[tomcli-set \| tomcli set]* ... lists [COMMAND] --help
 
 # DESCRIPTION
 
@@ -57,7 +57,7 @@ The *tomcli-set lists* subcommand supports modifying lists in TOML files.
 Add a string value to a TOML list
 
 ```
-tomcli-set [GLOBAL OPTIONS] PATH append SELECTOR VALUE [OPTIONS]
+tomcli-set [GLOBAL OPTIONS] PATH append [OPTIONS] SELECTOR VALUE 
 tomcli-set ... append --help
 ```
 
@@ -66,7 +66,7 @@ tomcli-set ... append --help
 Delete string values from a TOML file
 
 ```
-tomcli-set [GLOBAL OPTIONS] PATH lists delitem SELECTOR PATTERN [OPTIONS]
+tomcli-set [GLOBAL OPTIONS] PATH lists delitem [OPTIONS] SELECTOR PATTERN
 tomcli-set ... lists delitem --help
 ```
 
@@ -75,7 +75,7 @@ tomcli-set ... lists delitem --help
 Replace string values in a TOML list with other string values
 
 ```
-tomcli-set [GLOBAL OPTIONS] PATH lists replace SELECTOR PATTERN REPL [OPTIONS]
+tomcli-set [GLOBAL OPTIONS] PATH lists replace [OPTIONS] SELECTOR PATTERN REPL
 tomcli-set ... lists replace --help
 ```
 
