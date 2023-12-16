@@ -200,3 +200,9 @@ def mockbuild(session: nox.Session):
     if not session.interactive:
         margs.append("--verbose")
     session.run(*margs, external=True)
+
+
+@nox.session
+def mkdocs(session: nox.Session) -> None:
+    session.install("-r", "doc/requirements.in")
+    session.run("mkdocs", *(session.posargs or ["build"]))
