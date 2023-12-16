@@ -75,7 +75,7 @@ def coverage(session: nox.Session):
 
 @nox.session()
 def covtest(session: nox.Session):
-    session.run("rm", *glob.iglob(".nox/*/tmp/.coverage*"), external=True)
+    session.run("rm", "-f", *glob.iglob(".nox/*/tmp/.coverage*"), external=True)
     test_sessions = (f"test-{v}" for v in test.python)  # type: ignore[attr-defined]
     for target in test_sessions:
         session.notify(target, ["--cov"])
