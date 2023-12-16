@@ -3,7 +3,7 @@ Copyright (C) 2023 Maxwell G <maxwell@gtmx.me>
 SPDX-License-Identifier: MIT
 -->
 
-# tomcli
+# [tomcli](https://tomcli.gtmx.me)
 
 [![builds.sr.ht status](https://builds.sr.ht/~gotmax23/tomcli/commits/main.svg)](https://builds.sr.ht/~gotmax23/tomcli/commits/main?)
 
@@ -15,6 +15,7 @@ CLI for working with TOML files. Pronounced "tom clee."
 
 ## Links
 
+- [**tomcli docsite**](https://tomcli.gtmx.me)
 - [tomcli project hub](https://sr.ht/~gotmax23/tomcli)
 - [tomcli git.sr.ht repo](https://git.sr.ht/~gotmax23/tomcli)
 - [tomcli tracker](https://todo.sr.ht/~gotmax23/tomcli)
