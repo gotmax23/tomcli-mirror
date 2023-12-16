@@ -32,7 +32,7 @@ Source0:        %{furl}/refs/download/v%{version}/tomcli-%{version}.tar.gz
 BuildArch:      noarch
 BuildRequires:  gnupg2
 BuildRequires:  python3-devel
-%if %{with mannpages}
+%if %{with manpages}
 BuildRequires:  scdoc
 %endif
 
