@@ -10,7 +10,7 @@ tomcli-formatters -- CLI for working with TOML files. Pronounced "tom clee."
 
 # DESCRIPTION
 
-The tomcli-formatters subcommand lists formatters available for use with
+The *tomcli-formatters* subcommand lists formatters available for use with
 tomcli-get.
 
 # OPTIONS
