@@ -5,6 +5,7 @@
 # License text: https://spdx.org/licenses/MIT.html
 
 %bcond bootstrap 0
+%bcond manpages 1
 %bcond tests %{without bootstrap}
 %if %{with tests} && %{with bootstrap}
 %{error:--with tests and --with bootstrap are mutually exclusive}
@@ -32,6 +33,9 @@ BuildArch:      noarch
 BuildRequires:  gnupg2
 BuildRequires:  python3-devel
 BuildRequires:  %{py3_dist pytest}
+%if %{with mannpages}
+BuildRequires:  scdoc
+%endif
 
 # One of the TOML backends is required
 Requires:       (%{py3_dist tomcli[tomlkit]} or %{py3_dist tomcli[tomli]})
@@ -60,10 +64,20 @@ tomcli is a CLI for working with TOML files. Pronounced "tom clee."
 %build
 %pyproject_wheel
 
+%if %{with manpages}
+for page in doc/*.scd; do
+    dest="${page%.scd}"
+    scdoc <"${page}" >"${dest}"
+done
+%endif
+
 
 %install
 %pyproject_install
 %pyproject_save_files tomcli
+
+# Install manpages
+install -Dpm 0644 doc/*.1 -t %{buildroot}%{_mandir}/man1
 
 # Install shell completions
 (
@@ -106,6 +120,7 @@ test "${newname}" = "not-tomcli"
 %{bash_completions_dir}/tomcli*
 %{fish_completions_dir}/tomcli*.fish
 %{zsh_completions_dir}/_tomcli*
+%{_mandir}/man1/tomcli*.1*
 
 
 %changelog
