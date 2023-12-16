@@ -1,0 +1,5 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+
+Files: doc/*.scd
+Copyright: 2023 Maxwell G <maxwell@gtmx.me>
+License: MIT
