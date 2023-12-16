@@ -65,10 +65,7 @@ tomcli is a CLI for working with TOML files. Pronounced "tom clee."
 %pyproject_install
 %pyproject_save_files tomcli
 
-mkdir -p %{buildroot}%{bash_completions_dir}
-mkdir -p %{buildroot}%{fish_completions_dir}
-mkdir -p %{buildroot}%{zsh_completions_dir}
-
+# Install shell completions
 (
 export %{py3_test_envvars}
 %{python3} compgen.py \

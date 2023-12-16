@@ -37,6 +37,19 @@ FISH = Shell("fish", "fish_source", lambda path, name: path / f"{name}.fish")
 ZSH = Shell("zsh", "zsh_source", lambda path, name: path / f"_{name}")
 
 
+def _get_shells_dict(
+    installroot: Path, _shells: dict[Shell, Path | None]
+) -> dict[Shell, Path]:
+    shells: dict[Shell, Path] = {}
+    for shell, directory in _shells.items():
+        if not directory:
+            continue
+        directory = installroot / directory.resolve().relative_to("/")
+        directory.mkdir(parents=True, exist_ok=True)
+        shells[shell] = directory
+    return shells
+
+
 @click.command()
 @click.option("--bash-dir", type=_path_type)
 @click.option("--fish-dir", type=_path_type)
@@ -49,11 +62,8 @@ def main(
     installroot: Path,
 ):
     _shells = {BASH: bash_dir, FISH: fish_dir, ZSH: zsh_dir}
-    shells: dict[Shell, Path] = {
-        shell: installroot / directory.relative_to("/")
-        for shell, directory in _shells.items()
-        if directory
-    }
+    shells = _get_shells_dict(installroot, _shells)
+
     for command in COMMANDS:
         envvar = get_complete_envvar(command)
         click.secho(f"Installing {command} completions")
