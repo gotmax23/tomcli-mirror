@@ -165,7 +165,8 @@ SHARED_PARAMS = SimpleNamespace(
     reader=click.option("--reader", default=None, type=RWEnumChoice(Reader)),
     path=SharedArg(
         click.argument("path"),
-        help="Path to a TOML file to read. Use '-' to read from stdin.",
+        help="Path to a TOML file to read. Use '-' to read from stdin."
+        " Set to `...` when calling `--help` for a subcommand",
     ),
     selector=SharedArg(
         click.argument("selector"),

@@ -69,7 +69,6 @@ class ModderCtx:
 
 @click.group(name="set", context_settings=DEFAULT_CONTEXT_SETTINGS)
 @SHARED_PARAMS.version
-@SHARED_PARAMS.path
 @click.option(
     "-o",
     "--output",
@@ -81,6 +80,7 @@ class ModderCtx:
 @SHARED_PARAMS.reader
 @SHARED_PARAMS.writer
 @click.pass_context
+@add_args_and_help(SHARED_PARAMS.path)
 def cli(
     context: click.Context,
     path: str,
