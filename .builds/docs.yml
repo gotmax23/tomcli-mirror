@@ -10,6 +10,7 @@ packages:
   - nox
   - pandoc
   - python3-devel
+  - rsync
   - scd2html
   - scdoc
 tasks:
