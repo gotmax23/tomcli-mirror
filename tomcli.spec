@@ -4,12 +4,22 @@
 # SPDX-License-Identifier: MIT
 # License text: https://spdx.org/licenses/MIT.html
 
+# bconds:
+#   tests
+#       Run unit tests
+#   tomlkit
+#       Enable tomlkit and all extras
+#   manpages
+#       Build manpages using scdoc
+#   bootstrap
+#       Disable tomlkit dependencies and unit tests.
+#       Add ~bootstrap to %%dist
+#       Allows tomcli to be built early in the new Python bootstrap process.
+
 %bcond bootstrap 0
-%bcond manpages 1
+%bcond tomlkit %{without bootstrap}
 %bcond tests %{without bootstrap}
-%if %{with tests} && %{with bootstrap}
-%{error:--with tests and --with bootstrap are mutually exclusive}
-%endif
+%bcond manpages 1
 
 # Add minimal py3_test_envvars for EPEL 9
 %if %{undefined py3_test_envvars}
@@ -38,10 +48,12 @@ BuildRequires:  scdoc
 
 # One of the TOML backends is required
 Requires:       (%{py3_dist tomcli[tomlkit]} or %{py3_dist tomcli[tomli]})
+%if %{with tomlkit}
 # Prefer the tomlkit backend
 Suggests:       %{py3_dist tomcli[tomlkit]}
 # Recommend the 'all' extra
 Recommends:     %{py3_dist tomcli[all]}
+%endif
 
 
 %description
@@ -55,7 +67,7 @@ tomcli is a CLI for working with TOML files. Pronounced "tom clee."
 %generate_buildrequires
 %{pyproject_buildrequires %{shrink:
     -x tomli
-    %{!?with_bootstrap:-x all,tomlkit}
+    %{?with_tomlkit:-x all,tomlkit}
     %{?with_tests:-x test}
 }}
 
@@ -108,7 +120,7 @@ test "${newname}" = "not-tomcli"
 %endif
 
 
-%pyproject_extras_subpkg -n tomcli all tomli tomlkit
+%pyproject_extras_subpkg -n tomcli %{?with_tomlkit:all tomlkit} tomli
 
 
 %files -f %{pyproject_files}
