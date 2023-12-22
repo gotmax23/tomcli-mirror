@@ -105,12 +105,13 @@ export %{py3_test_envvars}
 # Smoke test
 (
 export %{py3_test_envvars}
+TOMCLI="%{buildroot}%{_bindir}/tomcli"
 cp pyproject.toml test.toml
-name="$(tomcli-get test.toml project.name)"
+name="$($TOMCLI get test.toml project.name)"
 test "${name}" = "tomcli"
 
-tomcli-set test.toml str project.name not-tomcli
-newname="$(tomcli-get test.toml project.name)"
+$TOMCLI set test.toml str project.name not-tomcli
+newname="$($TOMCLI get test.toml project.name)"
 test "${newname}" = "not-tomcli"
 )
 
