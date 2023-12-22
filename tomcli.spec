@@ -124,7 +124,7 @@ test "${newname}" = "not-tomcli"
 
 
 %files -f %{pyproject_files}
-%license LICENSES/*.txt
+%license LICENSE
 %doc README.md
 %doc NEWS.md
 %{_bindir}/tomcli*
