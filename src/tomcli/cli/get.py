@@ -20,7 +20,7 @@ from tomcli.cli._util import (
     fatal,
     split_by_dot,
 )
-from tomcli.formatters import get_formatter
+from tomcli.formatters import FormatterError, get_formatter
 from tomcli.toml import Reader, Writer, load
 
 
@@ -78,7 +78,10 @@ def get(
         )
     except KeyError:
         fatal(formatter, "is not a valid formatter")
-    print(formatter_obj(selected))
+    try:
+        print(formatter_obj(selected))
+    except FormatterError as exc:
+        fatal(f"{formatter!r} formatter error:", exc)
 
 
 app = get
