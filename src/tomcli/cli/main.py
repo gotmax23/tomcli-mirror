@@ -16,8 +16,7 @@ from ._util import DEFAULT_CONTEXT_SETTINGS
 
 @click.group(context_settings=DEFAULT_CONTEXT_SETTINGS, help=_doc)
 @click.version_option(_ver, message="%(version)s")
-def APP():
-    ...
+def APP(): ...
 
 
 APP.add_command(get_cmd.app)

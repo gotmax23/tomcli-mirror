@@ -92,12 +92,10 @@ class peekable(Generic[_T], Iterator[_T]):
         return True
 
     @overload
-    def peek(self) -> _T:
-        ...
+    def peek(self) -> _T: ...
 
     @overload
-    def peek(self, default: _T2) -> _T | _T2:
-        ...
+    def peek(self, default: _T2) -> _T | _T2: ...
 
     def peek(self, default=_marker):
         """Return the item that will be next returned from ``next()``.
@@ -179,12 +177,10 @@ class peekable(Generic[_T], Iterator[_T]):
         return list(self._cache)[index]
 
     @overload
-    def __getitem__(self, index: int) -> _T:
-        ...
+    def __getitem__(self, index: int) -> _T: ...
 
     @overload
-    def __getitem__(self, index: slice) -> list[_T]:
-        ...
+    def __getitem__(self, index: slice) -> list[_T]: ...
 
     def __getitem__(self, index):
         if isinstance(index, slice):

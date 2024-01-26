@@ -383,8 +383,10 @@ T = TypeVar("T")
 def set_type(  # noqa: PLR0913
     *,
     typ: Callable[[Any], T] = lambda x: x,
-    callback: Callable[[MutableMapping[str, Any], str, T], Any]
-    | Callable[[MutableMapping[str, Any], str], Any] = operator.setitem,
+    callback: (
+        Callable[[MutableMapping[str, Any], str, T], Any]
+        | Callable[[MutableMapping[str, Any], str], Any]
+    ) = operator.setitem,
     default: Callable[[], Any] | EllipsisType = ...,
     fun_msg: str | None = "Invalid selector: '.'",
     modder: ModderCtx,
