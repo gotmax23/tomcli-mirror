@@ -4,7 +4,7 @@
 *.rpm
 *.tar.gz*
 .nox/
-/FRAG.md
+/NEWS_FRAGMENT.md
 /GIT_MSG
 /dist/
 __pycache__/
