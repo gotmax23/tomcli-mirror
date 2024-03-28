@@ -24,4 +24,4 @@ tasks:
       tar cvf results_tomcli.tar.gz results_tomcli
   - rpmlint: |
       cd tomcli
-      rpmlint results_tomcli/*.rpm
+      rpmlint -r tomcli.rpmlintrc results_tomcli/*.rpm
