@@ -12,7 +12,7 @@ from collections.abc import Callable, Mapping, MutableMapping, MutableSequence
 from enum import Enum
 from fnmatch import fnmatch
 from types import SimpleNamespace
-from typing import Any, TypeVar
+from typing import Any, TypeVar, cast
 
 if sys.version_info >= (3, 10):
     from types import EllipsisType
@@ -436,7 +436,7 @@ def set_type(  # noqa: PLR0913
         if idx + 1 == len(parts):
             break
         if part not in cur and default is not ...:
-            cur[part] = default()
+            cur[part] = cast("Callable[[], Any]", default)()
         cur = cur[part]
     if value is ...:
         callback(cur, part)  # type: ignore[call-arg]
