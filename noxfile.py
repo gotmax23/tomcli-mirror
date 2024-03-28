@@ -27,8 +27,7 @@ LINT_FILES = (
     "compgen.py",
     "doc/mkdocs_mangen.py",
 )
-RELEASERR = "releaserr[all] @ git+https://git.sr.ht/~gotmax23/releaserr"
-# RELEASERR = "-e../releaserr[all]"
+RELEASERR = "releaserr"
 
 nox.options.sessions = (*LINT_SESSIONS, "covtest")
 
@@ -146,7 +145,7 @@ def bump(session: nox.Session):
 @nox.session
 def publish(session: nox.Session):
     # Setup
-    install(session, RELEASERR)
+    install(session, RELEASERR, "twine")
     session.run("releaserr", "--version")
 
     session.run("releaserr", "ensure-clean")
@@ -206,3 +205,9 @@ def mockbuild(session: nox.Session):
 def mkdocs(session: nox.Session) -> None:
     session.install("-r", "doc/requirements.in")
     session.run("mkdocs", *(session.posargs or ["build"]))
+
+
+@nox.session
+def releaserr(session: nox.Session):
+    session.install("releaserr")
+    session.run("releaserr", *session.posargs)
