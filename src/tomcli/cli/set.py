@@ -8,7 +8,7 @@ import dataclasses
 import operator
 import re
 import sys
-from collections.abc import Callable, Mapping, MutableMapping, MutableSequence
+from collections.abc import Callable, Mapping, MutableMapping, MutableSequence, Sequence
 from enum import Enum
 from fnmatch import fnmatch
 from types import SimpleNamespace
@@ -245,8 +245,10 @@ lsts.add_command(lst, name="str")
 
 @cli.command()
 @click.pass_context
-@add_args_and_help(SHARED_PARAMS.selector, click.argument("value"))
-def append(ctx: click.Context, selector: str, value: str):
+@add_args_and_help(
+    SHARED_PARAMS.selector, click.argument("value", nargs=-1, required=True)
+)
+def append(ctx: click.Context, selector: str, value: Sequence[str]):
     """
     Append strings to an existing list in a TOML file
     """

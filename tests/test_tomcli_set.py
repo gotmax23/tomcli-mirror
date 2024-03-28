@@ -110,11 +110,12 @@ def test_set_append(rwargs, tmp_path: Path):
     orig = loads(orig_path.read_text())
     copy2(orig_path, path)
 
-    args = [*rwargs, str(path), "append", "lst.data", "4"]
+    args = [*rwargs, str(path), "append", "lst.data", "456", "789"]
     ran = CliRunner().invoke(app, args, catch_exceptions=False)
     assert ran.exit_code == 0
 
-    orig["lst"]["data"].append("4")
+    orig["lst"]["data"].append("456")
+    orig["lst"]["data"].append("789")
     assert loads(path.read_text()) == orig
 
 
