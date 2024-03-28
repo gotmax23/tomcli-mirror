@@ -6,6 +6,21 @@ SPDX-License-Identifier: MIT
 NEWS
 =======
 
+## 0.6.0 - 2024-03-28 <a id='0.6.0'></a>
+
+### Added
+
+- `cli main`: add command description
+- `cli set`: allow passing multiple values to the append command
+- `cli`: support `python -m tomcli`
+- `doc`: add manpages
+- `doc`: add mkdocs configuration
+
+### Fixed
+
+- `cli set`: remove unnecessary `resilient_parsing` conditional
+- `cli get`: properly handle `FormatterError` exceptions
+
 ## 0.5.0 - 2023-12-14 <a id='0.5.0'></a>
 
 ### Added
