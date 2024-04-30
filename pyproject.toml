@@ -10,7 +10,7 @@ name = "tomcli"
 dynamic = ["version"]
 description = 'CLI for working with TOML files. Pronounced "tom clee."'
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 license.text = "MIT"
 authors = [
   { name = "Maxwell G", email = "maxwell@gtmx.me" },
@@ -19,7 +19,6 @@ classifiers = [
   "Development Status :: 3 - Alpha",
   "Environment :: Console",
   "Programming Language :: Python",
-  "Programming Language :: Python :: 3.8",
   "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
