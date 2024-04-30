@@ -50,7 +50,7 @@ tomcli-set ... append --help
 Delete a value from a TOML file
 
 ```
-tomcli-set [GLOBAL OPTIONS] PATH del SELECTOR [OPTIONS]
+tomcli-set [GLOBAL OPTIONS] PATH del [OPTIONS] SELECTOR...
 tomcli-set ... del --help
 ```
 

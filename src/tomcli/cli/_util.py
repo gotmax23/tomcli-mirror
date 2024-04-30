@@ -141,7 +141,7 @@ def add_args_and_help(
         helps: list[str] = []
         for param in reversed(params):
             param(func)
-            metavar = func.__click_params__[-1].make_metavar()  # type: ignore[attr-defined]
+            metavar = func.__click_params__[-1].make_metavar().removesuffix("...")  # type: ignore[attr-defined]
             phelp = f"* {metavar}"
             if isinstance(param, SharedArg) and param.help:
                 phelp += f": {param.help}"
@@ -170,6 +170,10 @@ SHARED_PARAMS = SimpleNamespace(
     ),
     selector=SharedArg(
         click.argument("selector"),
+        help=SELECTOR_HELP,
+    ),
+    selectors=SharedArg(
+        click.argument("selectors", metavar="SELECTOR...", nargs=-1, required=True),
         help=SELECTOR_HELP,
     ),
     formatter=click.option("-F", "--formatter", default=DEFAULT_FORMATTER),

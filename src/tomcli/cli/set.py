@@ -104,10 +104,10 @@ def lsts():
 
 @cli.command(name="del")
 @click.pass_context
-@add_args_and_help(SHARED_PARAMS.selector)
+@add_args_and_help(SHARED_PARAMS.selectors)
 def delete(
     ctx: click.Context,
-    selector: str,
+    selectors: Sequence[str],
 ):
     """
     Delete a value from a TOML file.
@@ -115,9 +115,10 @@ def delete(
     modder: ModderCtx = ctx.ensure_object(ModderCtx)
     modder.set_default_rw(Reader.TOMLKIT, Writer.TOMLKIT)
     fun_msg = "Thank you for your patronage, but we won't delete the whole file."
-    set_type(
-        callback=operator.delitem, fun_msg=fun_msg, modder=modder, selector=selector
-    )
+    for selector in selectors:
+        set_type(
+            callback=operator.delitem, fun_msg=fun_msg, modder=modder, selector=selector
+        )
 
 
 @cli.command(name="str")
