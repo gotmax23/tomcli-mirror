@@ -6,6 +6,17 @@ SPDX-License-Identifier: MIT
 NEWS
 =======
 
+## 0.7.0 - 2024-05-06 <a id='0.7.0'></a>
+
+### Added
+
+- `cli set del`: allow removing multiple keys in one invocation
+- `formatters`: add `-F newline-keys` and `-F newline-values`
+
+### Removed
+
+- Remove support for Python 3.8
+
 ## 0.6.0 - 2024-03-28 <a id='0.6.0'></a>
 
 ### Added
