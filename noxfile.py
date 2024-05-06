@@ -5,12 +5,15 @@ from __future__ import annotations
 
 import glob
 import os
+from collections.abc import Sequence
 from glob import iglob
 from pathlib import Path
 from shutil import copy2
+from typing import Any, Union
 
 import nox
 
+StrPath = Union[str, "os.PathLike[str]"]
 IN_CI = "JOB_ID" in os.environ or "CI" in os.environ
 ALLOW_EDITABLE = os.environ.get("ALLOW_EDITABLE", str(not IN_CI)).lower() in (
     "1",
@@ -35,13 +38,13 @@ nox.options.sessions = (*LINT_SESSIONS, "covtest")
 # Helpers
 
 
-def install(session: nox.Session, *args, editable=False, **kwargs):
+def install(session: nox.Session, *args: str, editable: bool = False, **kwargs: Any):
     if editable and ALLOW_EDITABLE:
         args = ("-e", *args)
     session.install(*args, **kwargs)
 
 
-def git(session: nox.Session, *args, **kwargs):
+def git(session: nox.Session, *args: StrPath, **kwargs: Any):
     return session.run("git", *args, **kwargs, external=True)
 
 
@@ -111,7 +114,7 @@ def formatters(session: nox.Session):
 def typing(session: nox.Session):
     install(session, ".[typing]", "-r", "doc/requirements.in", editable=True)
     session.run("mypy", *LINT_FILES)
-    session.run("basedpyright", f"src/{PROJECT}")
+    session.run("basedpyright", f"src/{PROJECT}", "noxfile.py")
 
 
 @nox.session
@@ -179,7 +182,7 @@ def copr_release(session: nox.Session):
 
 
 @nox.session
-def srpm(session: nox.Session, posargs=None):
+def srpm(session: nox.Session, posargs: Sequence[StrPath] | None = None):
     install(session, "fclogr")
     posargs = posargs or session.posargs
     session.run("fclogr", "--debug", "dev-srpm", *posargs, SPECFILE)
