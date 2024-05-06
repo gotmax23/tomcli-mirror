@@ -55,10 +55,13 @@ formatters = [
     "isort",
 ]
 typing = [
+    "basedpyright",
     "tomcli[tomli]",
     "tomcli[tomlkit]",
     "mypy",
     "pytest",
+    # Always install tomli
+    "tomli",
     "typing_extensions",
     # For checking noxfile.py
     "nox",
@@ -136,3 +139,9 @@ exclude_lines = [
     'except ImportError:',
 ]
 
+[tool.basedpyright]
+typeCheckingMode = "strict"
+reportPrivateUsage = false
+ignore = [
+    "src/tomcli/_peekable.py",
+]

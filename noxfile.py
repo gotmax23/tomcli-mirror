@@ -111,6 +111,7 @@ def formatters(session: nox.Session):
 def typing(session: nox.Session):
     install(session, ".[typing]", "-r", "doc/requirements.in", editable=True)
     session.run("mypy", *LINT_FILES)
+    session.run("basedpyright", f"src/{PROJECT}")
 
 
 @nox.session

@@ -77,6 +77,7 @@ def split_by_dot(selector: str) -> Iterator[str]:
         if character == quote:
             # Don't allow something like `"ab"c.d`.
             if it.peek(...) not in (".", ...):
+                quote = cast(str, quote)
                 _err(quote + parts + quote + it.peek(), "`.` or end")
             quote = None
             # Short circuit. We know the next is a "."

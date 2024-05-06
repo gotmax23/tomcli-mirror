@@ -271,6 +271,7 @@ def _append_callback(cur: MutableMapping[str, Any], part: str, value: list[Any])
             "You can only append values to an existing list."
             " Use the 'list' subcommand to create a new list"
         )
+    lst = cast("MutableSequence[Any]", lst)
     lst.extend(value)
 
 
@@ -439,7 +440,7 @@ def set_type(  # noqa: PLR0913
         if idx + 1 == len(parts):
             break
         if part not in cur and default is not ...:
-            cur[part] = cast("Callable[[], Any]", default)()
+            cur[part] = default()
         cur = cur[part]
     if value is ...:
         callback(cur, part)  # type: ignore[call-arg]
