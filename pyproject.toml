@@ -94,7 +94,9 @@ Changelog = "https://tomcli.gtmx.me/news/"
 [project.entry-points."tomcli.formatters"]
 default = "tomcli.formatters.builtin:default_formatter"
 json = "tomcli.formatters.builtin:json_formatter"
+newline-keys = "tomcli.formatters.builtin:newline_keys_formatter"
 newline-list = "tomcli.formatters.builtin:newline_list_formatter"
+newline-values = "tomcli.formatters.builtin:newline_values_formatter"
 string = "tomcli.formatters.builtin:string_formatter"
 toml = "tomcli.formatters.builtin:toml_formatter"
 

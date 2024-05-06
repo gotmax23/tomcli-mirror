@@ -27,8 +27,14 @@ default
 json
 	Return the JSON representation of the object
 
+newline-keys
+	Return a newline-separated list of Mapping keys
+
 newline-list
 	Return a newline separated list
+
+newline-values
+	Return a newline-separated list of Mapping values
 
 string
 	Print the Python str() representation of the object

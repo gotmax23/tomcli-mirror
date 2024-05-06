@@ -9,7 +9,11 @@ from typing import Any
 import pytest
 
 from tomcli.formatters import FormatterError, get_formatters_list
-from tomcli.formatters.builtin import newline_list_formatter
+from tomcli.formatters.builtin import (
+    newline_keys_formatter,
+    newline_list_formatter,
+    newline_values_formatter,
+)
 
 if sys.version_info >= (3, 11):
     import importlib.metadata as importlib_metadata
@@ -47,3 +51,14 @@ def test_newline_list_formatter():
 def test_newline_list_formatter_error(obj: Any, err: str) -> None:
     with pytest.raises(FormatterError, match=err):
         newline_list_formatter(obj)
+
+
+def test_newline_keys_formatter() -> None:
+    keys = ["a", "b", "c"]
+    out = newline_keys_formatter(dict.fromkeys(keys, 1))
+    assert out.splitlines() == keys
+
+
+def test_newline_values_formatter() -> None:
+    out = newline_values_formatter({"a": 1, "b": 2, "c": 3})
+    assert out == "\n".join(["1", "2", "3"])

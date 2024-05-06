@@ -65,3 +65,23 @@ def newline_list_formatter(obj: Any) -> str:
             )
         items.append(str(item))
     return "\n".join(items)
+
+
+def newline_keys_formatter(obj: Any) -> str:
+    """
+    Return a newline-separated list of Mapping keys
+    """
+    if not isinstance(obj, Mapping):  # pragma: no cover
+        raise FormatterError("The object is not a Mapping")
+    obj = cast("Mapping[str, Any]", obj)
+    return newline_list_formatter(list(obj.keys()))
+
+
+def newline_values_formatter(obj: Any) -> str:
+    """
+    Return a newline-separated list of Mapping values
+    """
+    if not isinstance(obj, Mapping):  # pragma: no cover
+        raise FormatterError("The object is not a Mapping")
+    obj = cast("Mapping[str, Any]", obj)
+    return newline_list_formatter(list(obj.values()))
