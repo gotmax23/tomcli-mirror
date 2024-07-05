@@ -17,9 +17,9 @@
 #       Allows tomcli to be built early in the new Python bootstrap process.
 
 %bcond bootstrap 0
-%bcond tomlkit %{without bootstrap}
+%bcond tomlkit %[%{without bootstrap} && (%{undefined rhel} || %{defined epel})]
 %bcond tests %{without bootstrap}
-%bcond manpages 1
+%bcond manpages %[%{undefined rhel} || %{defined epel}]
 
 # Add minimal py3_test_envvars for EPEL 9
 %if %{undefined py3_test_envvars}
@@ -87,8 +87,10 @@ done
 %pyproject_install
 %pyproject_save_files tomcli
 
+%if %{with manpages}
 # Install manpages
 install -Dpm 0644 doc/*.1 -t %{buildroot}%{_mandir}/man1
+%endif
 
 # Install shell completions
 (
@@ -132,7 +134,9 @@ test "${newname}" = "not-tomcli"
 %{bash_completions_dir}/tomcli*
 %{fish_completions_dir}/tomcli*.fish
 %{zsh_completions_dir}/_tomcli*
+%if %{with manpages}
 %{_mandir}/man1/tomcli*.1*
+%endif
 
 
 %changelog
