@@ -6,17 +6,19 @@ image: fedora/latest
 packages:
   - mock
   - mock-core-configs
-  - pipx
   - rpm-build
   - rpmdevtools
   - rpmlint
+  - uv
 sources:
   - "https://git.sr.ht/~gotmax23/tomcli"
 artifacts:
   - tomcli/results_tomcli.tar.gz
+environment:
+  NOX_DEFAULT_VENV_BACKEND: uv
 tasks:
   - setup: |
-      pipx install nox
+      uv tool install nox
       sudo usermod -aG mock $USER
   - mockbuild-epel9: |
       cd tomcli

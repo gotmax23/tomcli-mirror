@@ -1,22 +1,24 @@
 # Copyright (C) 2023 Maxwell G <maxwell@gtmx.me>
 # SPDX-License-Identifier: MIT
 ---
-image: fedora/38
+image: fedora/40
 secrets:
   - 1ec4d132-f9e9-4e00-9ba6-eb5528e6945e
 sources:
   - https://git.sr.ht/~gotmax23/tomcli
 packages:
-  - nox
   - pandoc
   - python3-devel
   - rsync
   - scd2html
   - scdoc
+  - uv
+environment:
+  NOX_DEFAULT_VENV_BACKEND: uv
 tasks:
   - submit-docs: |
       cd tomcli
-      nox -e mkdocs
+      uvx nox -e mkdocs
       if [ "$(git rev-parse HEAD)" = "$(git rev-parse origin/main)" ]; then
         echo "Submitting docs for main branch"
         ssh-keyscan tomcli.gtmx.me | tee -a ~/.ssh/known_hosts

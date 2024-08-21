@@ -4,21 +4,24 @@
 
 image: fedora/rawhide
 packages:
-  - pipx
   - python3.8
   - python3.9
   - python3.10-devel
   - python3.11-devel
   - python3.12-devel
+  - python3.13-devel
+  - uv
 sources:
   - https://git.sr.ht/~gotmax23/tomcli
 secrets:
   # gotmax23/tomcli-dev webhook
   - e439d187-52e2-4f21-8db9-fa883bebeadc
+environment:
+  NOX_DEFAULT_VENV_BACKEND: uv
 tasks:
   - setup: |
-      pipx install nox
-      pipx install git+https://git.sr.ht/~gotmax23/releaserr
+      uv tool install nox
+      uv tool install git+https://git.sr.ht/~gotmax23/releaserr
   - copr-webhook: |
       cd tomcli
       releaserr copr-webhook ~/.copr-dev-hook --branch origin/main --skip-if-missing
@@ -29,4 +32,3 @@ tasks:
   - nox-lint: |
       cd tomcli
       nox -e lint
-
