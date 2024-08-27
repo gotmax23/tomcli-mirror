@@ -59,6 +59,7 @@ typing = [
     "basedpyright",
     "tomcli[tomli]",
     "tomcli[tomlkit]",
+    "mkdocs-gen-files",
     "mypy",
     "pytest",
     # Always install tomli
@@ -66,6 +67,7 @@ typing = [
     "typing_extensions",
     # For checking noxfile.py
     "nox",
+    "releaserr",
 ]
 test = [
     "pytest",
