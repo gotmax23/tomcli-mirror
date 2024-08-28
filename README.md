@@ -53,20 +53,26 @@ with `tomcli-get -F` / `tomcli-get --formatter`:
 ``` console
 $ tomcli-formatters
 default
-	Use the `toml` formatter if the object is a Mapping and fall back to
-	`string`.
+        Use the `toml` formatter if the object is a Mapping and fall back to
+        `string`.
 
 json
-	Return the JSON representation of the object
+        Return the JSON representation of the object
+
+newline-keys
+        Return a newline-separated list of Mapping keys
 
 newline-list
-	Return a newline separated list
+        Return a newline separated list
+
+newline-values
+        Return a newline-separated list of Mapping values
 
 string
-	Print the Python str() representation of the object
+        Print the Python str() representation of the object
 
 toml
-	Return the TOML mapping of the object
+        Return the TOML mapping of the object
 
 ```
 
