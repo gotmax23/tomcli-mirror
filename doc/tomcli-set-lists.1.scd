@@ -50,6 +50,10 @@ The *tomcli-set lists* subcommand supports modifying lists in TOML files.
 *--first*
 	Only modify the first *PATTERN* match
 
+*--key* <SELECTOR PATTERN>
+	Only applies to the *delitem* subcommand.
+	See the delitem documentation below.
+
 # COMMANDS
 
 ## append
@@ -63,7 +67,17 @@ tomcli-set ... append --help
 
 ## delitem
 
-Delete string values from a TOML file
+Delete string values in a TOML array.
+SELECTOR matches the path to the array and PATTERN matches strings within the
+array that should be deleted.
+Items that are not a string will be ignored.
+
+The *--key* option be used to remove values from an array that contains
+tables (i.e., key-value pairs) instead of strings.
+Then, the KEY selector is looked up in each table and the respective value is
+matched against PATTERN.
+See https://todo.sr.ht/~gotmax23/tomcli/9 for a more detailed description and
+rationale.
 
 ```
 tomcli-set [GLOBAL OPTIONS] PATH lists delitem [OPTIONS] SELECTOR PATTERN

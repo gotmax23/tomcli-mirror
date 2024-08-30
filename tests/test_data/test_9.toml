@@ -1,0 +1,11 @@
+# https://todo.sr.ht/~gotmax23/tomcli/9
+# Copyright (C) 2024 Maxwell G <maxwell@gtmx.me>
+# SPDX-License-Identifier: MIT
+
+[[test]]
+name = "delete_me"
+path = "tests/delete_me.rs"
+
+[[test]]
+name = "keep_me"
+path = "tests/keep_me.rs"

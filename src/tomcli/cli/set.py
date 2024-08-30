@@ -328,6 +328,7 @@ def lists_replace(
 @click.pass_context
 @_LISTS_COMMON_ARGS.pattern_type
 @_LISTS_COMMON_ARGS.first
+@click.option("--key")
 @add_args_and_help(SHARED_PARAMS.selector, _LISTS_COMMON_ARGS.pattern)
 def lists_delete(
     ctx: click.Context,
@@ -335,6 +336,7 @@ def lists_delete(
     pattern: str,
     pattern_type: PATTERN_TYPES,
     first: bool,
+    key: str | None,
 ):
     """
     Delete string values in a TOML list.
@@ -342,23 +344,37 @@ def lists_delete(
     """
     modder: ModderCtx = ctx.ensure_object(ModderCtx)
     modder.set_default_rw(Reader.TOMLKIT, Writer.TOMLKIT)
-    cb = _repl_match_factory(pattern_type, first, pattern, None)
+    cb = _repl_match_factory(pattern_type, first, pattern, None, key=key)
     return set_type(
         fun_msg=None, modder=modder, selector=selector, value=..., callback=cb
     )
 
 
 def _repl_match_factory(
-    pattern_type: PATTERN_TYPES, first: bool, pattern: str, repl: str | None
+    pattern_type: PATTERN_TYPES,
+    first: bool,
+    pattern: str,
+    repl: str | None,
+    *,
+    key: str | None = None,
 ) -> Callable[[MutableMapping[str, Any], str], None]:
-    def callback(cur: MutableMapping[str, Any], part: str) -> None:
+    def callback(cur: MutableMapping[str, Any], part: str) -> None:  # noqa: PLR0912
         if not isinstance(cur[part], MutableSequence):
             fatal("You cannot replace values unless the value is a list")
-        lst: list[object] = cur[part]
+        lst: list[Any] = cur[part]
         next_idx: int = 0
         for item in lst.copy():
             next_idx += 1
-            if not isinstance(item, str):
+            if key is not None:
+                if repl is not None:  # pragma: no cover
+                    raise ValueError("repl and keys are mutually exclusive")
+                if not isinstance(item, Mapping):
+                    continue
+                item = cast("Mapping[Any, Any]", item)
+                for k in split_by_dot(key):
+                    item = item[k]
+                item = cast(str, item)
+            elif not isinstance(item, str):
                 continue
             current_repl = repl
             match = False

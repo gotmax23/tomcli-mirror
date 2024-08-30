@@ -237,3 +237,17 @@ def test_set_bool(rwargs, tmp_path: Path, cmd: str, boolean: bool):
 
     orig["bool_key"] = boolean
     assert loads(path.read_text()) == orig
+
+
+def test_set_lists_delitem_key(rwargs, tmp_path: Path) -> None:
+    orig_path = TEST_DATA / "test_9.toml"
+    path = tmp_path / "test_9.toml"
+    orig = loads(orig_path.read_text())
+    copy2(orig_path, path)
+
+    args = [*rwargs, str(path), "lists", "delitem", "--key=name", "test", "delete_.*"]
+    ran = CliRunner().invoke(app, args, catch_exceptions=False)
+    assert ran.exit_code == 0
+
+    del orig["test"][0]
+    assert loads(path.read_text()) == orig
