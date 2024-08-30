@@ -149,4 +149,6 @@ typeCheckingMode = "strict"
 reportPrivateUsage = false
 ignore = [
     "src/tomcli/_peekable.py",
+    # I don't care about strict typing for tests.
+    "tests",
 ]
