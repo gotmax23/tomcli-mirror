@@ -414,18 +414,20 @@ def set_type(  # noqa: PLR0913
     value: Any = ...,
 ):
     """
-    Iterate over a TOML file based on a dot-separated selector and preform on
-    operation.
+    Higher-order function to iterate over a TOML file based on a dot-separated
+    selector and perform on operation.
 
     Parameters:
         typ:
-            Callable to use when passing `value` to the `callback` function
+            Callable to use to convert `value` before passing it to the
+            `callback` function.
+            By default, this just returns `value` as is.
         callback:
             Callable to pass the final dictionary to.
             The callable should take three arguments:
                 1. The final dictionary
                 2. The final component of the dictionary
-                3. The `value` passed to `set_type()`.
+                3. The `value` parameter after being passed to the `typ` function.
                    If `value` isn't passed, only two args will be passed.
         default:
             default factory to use when a key isn't found in the Mapping
@@ -440,7 +442,7 @@ def set_type(  # noqa: PLR0913
             A dot separated map to a key in the TOML mapping.
             Example: `section1.subsection.value`
         value:
-            value to pass as the third argument to the `callback`.
+            Value to pass as the third argument to the `callback`
 
     """
     data = modder.load()
