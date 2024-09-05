@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: MIT
 from __future__ import annotations
 
+import re
 import sys
 from collections.abc import Callable, Iterator
 from contextlib import contextmanager
@@ -28,6 +29,9 @@ if TYPE_CHECKING:
 
 DEFAULT_CONTEXT_SETTINGS = context_settings = dict(help_option_names=["-h", "--help"])
 
+# https://toml.io/en/v1.0.0#keys
+TOML_KEY_MATCHER = re.compile(r"[A-Za-z0-9_-]+")
+
 
 @contextmanager
 def _std_cm(path: str, dash_stream: IO[AnyStr], mode: str) -> Iterator[IO[AnyStr]]:
@@ -43,16 +47,39 @@ def fatal(*args: object, returncode: int = 1) -> NoReturn:
     click.get_current_context().exit(returncode)
 
 
-def split_by_dot(selector: str) -> Iterator[str]:
+def _verify_part(part: str) -> str:
     """
-    Naively split dot-separated keys while keeping quotes in mind.
+    Verify that an unquoted key is valid, per the TOML standard
 
+    See https://toml.io/en/v1.0.0#keys.
+    """
+    if not TOML_KEY_MATCHER.fullmatch(part):
+        raise ValueError(
+            f"Invalid selector part: `{part}`. Try wrapping the key in quotes."
+        )
+    return part
+
+
+def split_by_dot(selector: str) -> Iterator[str]:
+    r"""
+    Split dot-separated TOML keys.
+    Handles quoted keys and ensures that unquoted keys only include characters
+    allwoed by TOML 1.0.
+
+    >>> list(split_by_dot("."))
+    []
+    >>> list(split_by_dot(""))
+    []
     >>> list(split_by_dot("a.b"))
     ['a', 'b']
     >>> list(split_by_dot("'a.b'"))
     ['a.b']
     >>> list(split_by_dot('"a.b".c'))
     ['a.b', 'c']
+    >>> list(split_by_dot('c."a.b.100".z'))
+    ['c', 'a.b.100', 'z']
+    >>> list(split_by_dot("'quoted \"value\"'.abc"))
+    ['quoted "value"', 'abc']
     >>> list(split_by_dot("'ab'x"))
     Traceback (most recent call last):
         ...
@@ -61,7 +88,19 @@ def split_by_dot(selector: str) -> Iterator[str]:
     Traceback (most recent call last):
         ...
     ValueError: Invalid selector part: `b..`. Expected character or end but got `.`.
+    >>> list(split_by_dot("a.b.'a"))
+    Traceback (most recent call last):
+        ...
+    ValueError: Invalid selector part: `'a`. Expected `'` but got end.
+    >>> next(split_by_dot("ajja ."))
+    Traceback (most recent call last):
+        ...
+    ValueError: Invalid selector part: `ajja `. Try wrapping the key in quotes.
     """
+
+    # Special case root
+    if selector == ".":
+        return
 
     quotes = ("'", '"')
     quote: str | None = None
@@ -69,8 +108,8 @@ def split_by_dot(selector: str) -> Iterator[str]:
     parts = ""
 
     def _err(part: str, expected: str, but: str | None = None) -> NoReturn:
-        but = but if but is not None else it.peek()
-        msg = f"Invalid selector part: `{part}`. Expected {expected} but got `{but}`."
+        but = but if but is not None else f"`{it.peek()}`"
+        msg = f"Invalid selector part: `{part}`. Expected {expected} but got {but}."
         raise ValueError(msg)
 
     for character in it:
@@ -87,14 +126,16 @@ def split_by_dot(selector: str) -> Iterator[str]:
         elif quote is None and character == ".":
             if it.peek(...) == ".":
                 _err(parts + "..", "character or end")
-            yield parts
+            yield _verify_part(parts)
             parts = ""
-        elif character in quotes:
+        elif character in quotes and not quote:
             quote = character
         else:
             parts += character
+    if quote:
+        _err(quote + parts, expected=f"`{quote}`", but="end")
     if parts:
-        yield parts
+        yield _verify_part(parts)
 
 
 # Based on https://github.com/pallets/click/pull/2210 and
