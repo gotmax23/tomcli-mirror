@@ -94,12 +94,18 @@ def cli(
     context.obj = ModderCtx(path, output or path, reader, writer)
 
 
+@cli.group()
+def arrays() -> None:
+    """
+    Subcommands for creating and modifying TOML lists
+    """
+
+
 @cli.group(name="lists")
 def lsts():
     """
-    Subcommands for creating and modifying lists
+    Alias for array subcommand
     """
-    ...
 
 
 @cli.command(name="del")
@@ -241,6 +247,7 @@ def lst(ctx: click.Context, selector: str, value: tuple[str, ...]):
     )
 
 
+arrays.add_command(lst, name="str")
 lsts.add_command(lst, name="str")
 
 
@@ -295,7 +302,7 @@ _LISTS_COMMON_ARGS = SimpleNamespace(
 )
 
 
-@lsts.command(name="replace")
+@arrays.command(name="replace")
 @click.pass_context
 @_LISTS_COMMON_ARGS.pattern_type
 @_LISTS_COMMON_ARGS.first
@@ -324,7 +331,10 @@ def lists_replace(
     )
 
 
-@lsts.command(name="delitem")
+lsts.add_command(lists_replace, "replace")
+
+
+@arrays.command(name="delitem")
 @click.pass_context
 @_LISTS_COMMON_ARGS.pattern_type
 @_LISTS_COMMON_ARGS.first
@@ -348,6 +358,9 @@ def lists_delete(
     return set_type(
         fun_msg=None, modder=modder, selector=selector, value=..., callback=cb
     )
+
+
+lsts.add_command(lists_delete, "delitem")
 
 
 def _repl_match_factory(

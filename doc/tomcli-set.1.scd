@@ -73,9 +73,13 @@ tomcli-set [GLOBAL OPTIONS] PATH [str|int|float] [OPTIONS] SELECTOR
 tomcli-set ... [str|int|float] --help
 ```
 
+## arrays
+
+Subcommand to modify TOML arrays. See tomcli-set-arrays(1).
+
 ## lists
 
-Subcommand to modify TOML lists. See tomcli-set-lists(1).
+Alias to the arrays subcommand.
 
 
 # SEE ALSO

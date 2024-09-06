@@ -65,4 +65,5 @@ nav:
       - tomcli-get: tomcli-get1.md
       - tomcli-formatters: tomcli-formatters1.md
       - tomcli-set: tomcli-set1.md
+      - tomcli-set-arrays: tomcli-set-arrays1.md
       - tomcli-set-lists: tomcli-set-lists1.md
