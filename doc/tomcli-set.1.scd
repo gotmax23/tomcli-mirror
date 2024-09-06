@@ -2,7 +2,7 @@ TOMCLI-SET(1)
 
 # NAME
 
-tomcli-set -- CLI for working with TOML files. Pronounced "tom clee."
+tomcli-set — CLI for working with TOML files. Pronounced "tom clee."
 
 # SYNOPSIS
 

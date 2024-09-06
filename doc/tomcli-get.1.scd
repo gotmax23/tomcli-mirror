@@ -2,7 +2,7 @@ TOMCLI-GET(1)
 
 # NAME
 
-*tomcli-get* -- CLI for working with TOML files. Pronounced "tom clee."
+*tomcli-get* — CLI for working with TOML files. Pronounced "tom clee."
 
 # SYNOPSIS
 

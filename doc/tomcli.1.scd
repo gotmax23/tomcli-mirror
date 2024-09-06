@@ -2,7 +2,7 @@ TOMCLI(1)
 
 # NAME
 
-*tomcli* -- CLI for working with TOML files. Pronounced "tom clee."
+*tomcli* — CLI for working with TOML files. Pronounced "tom clee."
 
 # SYNOPSIS
 

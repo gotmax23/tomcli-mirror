@@ -2,7 +2,7 @@ TOMCLI-FORMATTERS(1)
 
 # NAME
 
-tomcli-formatters -- CLI for working with TOML files. Pronounced "tom clee."
+tomcli-formatters — CLI for working with TOML files. Pronounced "tom clee."
 
 # SYNOPSIS
 
