@@ -106,23 +106,23 @@ Set a string value:
 $ tomcli-set pyproject.toml str 'project.readme' 'README.rst'
 ```
 
-### `tomcli-get lists`
+### `tomcli-get arrays`
 
-> Modify lists within a TOML file
+> Modify arrays within a TOML file
 
 Remove all values that match a Python regex:
 
 > **NOTE:** The regex must match the entire string
 
 ``` console
-$ tomcli-set pyproject.toml lists delitem \
+$ tomcli-set pyproject.toml arrays delitem \
     'project.classifiers' 'Programming Language :: Python.*'
 ```
 
 Remove all values that match an fnmatch-style pattern:
 
 ``` console
-$ tomcli-set pyproject.toml lists delitem --type fnmatch \
+$ tomcli-set pyproject.toml arrays delitem --type fnmatch \
     'project.optional-dependencies.dev' '*cov*'
 ```
 
@@ -131,7 +131,7 @@ Replace values that match a Python regex:
 > **NOTE:** The regex must match the entire string
 
 ``` console
-$ tomcli-set pyproject.toml lists replace \
+$ tomcli-set pyproject.toml arrays replace \
     'project.optional-dependencies.test' '(.+)==(.+)' '\1>=\2'
 ```
 
@@ -141,7 +141,7 @@ Create a list of strings:
 ## Create the new file
 $ touch plays.toml
 ## Automatically creates the "Romeo and Juliet" table
-$ tomcli-set plays.toml lists str \
+$ tomcli-set plays.toml arrays str \
     '"Romeo and Juliet".characters' 'Romeo' 'Juliet' 'Mercuitio' 'Nurse'
 ```
 
