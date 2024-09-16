@@ -7,4 +7,4 @@ CLI for working with TOML files. Pronounced "tom clee."
 
 from __future__ import annotations
 
-__version__ = "0.7.0.post0"
+__version__ = "0.8.0"

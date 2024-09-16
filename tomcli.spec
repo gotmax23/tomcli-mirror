@@ -30,7 +30,7 @@ PATH=%{buildroot}%{_bindir}:${PATH}
 %endif
 
 Name:           tomcli
-Version:        0.7.0
+Version:        0.8.0
 Release:        1%{?dist}
 Summary:        CLI for working with TOML files. Pronounced "tom clee."
 
@@ -140,6 +140,9 @@ test "${newname}" = "not-tomcli"
 
 
 %changelog
+* Mon Sep 16 2024 Maxwell G <maxwell@gtmx.me> - 0.8.0-1
+- Release 0.8.0.
+
 * Mon May 06 2024 Maxwell G <maxwell@gtmx.me> - 0.7.0-1
 - Release 0.7.0.
 

@@ -6,6 +6,32 @@ SPDX-License-Identifier: MIT
 NEWS
 =======
 
+## 0.8.0 - 2024-09-16 <a id='0.8.0'></a>
+
+### Added
+
+- arrays delitem: add `--key` flag to access arrays of tables
+  (see https://todo.sr.ht/~gotmax23/tomcli/9 and `man tomcli-set-arrays` for more details!).
+- packaging: declare support for Python 3.13
+
+### Changed
+
+- all: parsing of `SELECTOR`s is now more strict.
+  Keys must be quoted if they contain characters that are not allowed as TOML
+  keys without quotes.
+  For example, `tomcli-get foo.toml "multiple words"`, given that `foo.toml`
+  contains `"multiple words" = 1234`, used to return `1234` but now errors.
+  Use `tomcli-get foo.toml "'multiple words'"` instead.
+  Trailing quotes are now handled properly, as well.
+- lists: the `lists` subcommand has been renamed to `arrays`, to align with the
+  TOML standard's name for that data type.
+  `lists` will perpetually remain an alias to the `arrays` command;
+  backwards compatibility is important to the tomcli project.
+
+### Fixed
+
+- doc: use proper unicode dashes in manpages
+
 ## 0.7.0 - 2024-05-06 <a id='0.7.0'></a>
 
 ### Added
