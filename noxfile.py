@@ -128,7 +128,7 @@ def bump(session: nox.Session):
     session.run("releaserr", "ensure-clean")
     session.run("releaserr", "set-version", "-s", "file", version)
 
-    install(session, ".")
+    install(session, ".", silent=False)
 
     # Bump specfile
     # fmt: off
