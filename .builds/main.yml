@@ -20,8 +20,8 @@ environment:
   NOX_DEFAULT_VENV_BACKEND: uv
 tasks:
   - setup: |
-      uv tool install nox
-      uv tool install git+https://git.sr.ht/~gotmax23/releaserr
+      uv tool install --python /usr/bin/python3 nox
+      uv tool install --python /usr/bin/python3 releaserr
   - copr-webhook: |
       cd tomcli
       releaserr copr-webhook ~/.copr-dev-hook --branch origin/main --skip-if-missing
