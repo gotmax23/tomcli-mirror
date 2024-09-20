@@ -16,6 +16,8 @@ sources:
 secrets:
   # gotmax23/tomcli-dev webhook
   - e439d187-52e2-4f21-8db9-fa883bebeadc
+  # sourcehut-github-mirror-tomcli
+  - dc84dad3-fb1f-4368-a927-46f71109e120
 environment:
   NOX_DEFAULT_VENV_BACKEND: uv
 tasks:
@@ -25,6 +27,20 @@ tasks:
   - copr-webhook: |
       cd tomcli
       releaserr copr-webhook ~/.copr-dev-hook --branch origin/main --skip-if-missing
+  - mirror: |
+      cd tomcli
+      key=~/.ssh/dc84dad3-fb1f-4368-a927-46f71109e120
+      if [ "$(git rev-parse HEAD)" = "$(git rev-parse origin/main)" ] \
+        && [ -f "${key}" ]
+      then
+        ssh-keyscan github.com >> ~/.ssh/known_hosts
+        eval "$(ssh-agent)"
+        ssh-add "${key}"
+        git remote add --fetch github git@github.com:gotmax23/tomcli-mirror.git
+        git push --force github main
+      else
+        echo "Not mirroring!"
+      fi
   - nox-covtest: |
       cd tomcli
       # TODO(gotmax23): Figure out why coverage is wrong without editable mode
