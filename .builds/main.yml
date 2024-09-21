@@ -37,7 +37,7 @@ tasks:
         eval "$(ssh-agent)"
         ssh-add "${key}"
         git remote add --fetch github git@github.com:gotmax23/tomcli-mirror.git
-        git push --force github main
+        git push --force --follow-tags github main
       else
         echo "Not mirroring!"
       fi
