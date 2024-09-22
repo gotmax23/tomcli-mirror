@@ -49,10 +49,10 @@ backwards compatibility is important to the tomcli project.
 
 # OPTIONS
 
-*-t* / *--type* <_regex_|_fnmatch_>
+*-t* / *--type* <_regex_|_fnmatch_> (default: _regex_)
 	Matcher type.
 	Python regexes and fnmatch(3)-style patterns are supported.
-*--first*
+*--first* / *--no-first* (default: _no-first_)
 	Only modify the first *PATTERN* match
 
 *--key* <SELECTOR PATTERN>

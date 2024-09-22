@@ -27,7 +27,10 @@ if TYPE_CHECKING:
     _P = ParamSpec("_P")
 
 
-DEFAULT_CONTEXT_SETTINGS = context_settings = dict(help_option_names=["-h", "--help"])
+DEFAULT_CONTEXT_SETTINGS = context_settings = dict(
+    help_option_names=["-h", "--help"],
+    show_default=True,
+)
 
 # https://toml.io/en/v1.0.0#keys
 TOML_KEY_MATCHER = re.compile(r"[A-Za-z0-9_-]+")
