@@ -9,6 +9,7 @@ from collections.abc import Callable, Iterator
 from contextlib import contextmanager
 from dataclasses import dataclass
 from enum import Enum
+from functools import wraps
 from textwrap import dedent
 from types import SimpleNamespace
 from typing import IO, TYPE_CHECKING, Any, AnyStr, NoReturn, TypeVar, cast
@@ -179,6 +180,12 @@ class SharedArg:
         return self.param(func)
 
 
+class TomcliError(Exception):
+    """
+    Base class for tomcli Exceptions that are caught automatically
+    """
+
+
 def add_args_and_help(
     *params: SharedArg | Any,
 ) -> Callable[[Callable[_P, _T]], Callable[_P, _T]]:
@@ -194,7 +201,15 @@ def add_args_and_help(
         helps.reverse()
         func.__doc__ = dedent(func.__doc__) + "\n\n" if func.__doc__ else ""
         func.__doc__ += "\n\n".join(helps)
-        return func
+
+        @wraps(func)
+        def newfunc(*args: _P.args, **kwargs: _P.kwargs) -> _T:
+            try:
+                return func(*args, **kwargs)
+            except TomcliError as exc:
+                sys.exit(str(exc))
+
+        return newfunc
 
     return inner
 
@@ -222,6 +237,11 @@ SHARED_PARAMS = SimpleNamespace(
         help=SELECTOR_HELP,
     ),
     formatter=click.option("-F", "--formatter", default=DEFAULT_FORMATTER),
+    required=click.option(
+        "--required / --not-required",
+        default=False,
+        help="Fail if no match for PATTERN is found",
+    ),
     version=click.version_option(_ver, message="%(version)s"),
 )
 

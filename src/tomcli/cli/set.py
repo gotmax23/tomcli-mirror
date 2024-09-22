@@ -26,6 +26,7 @@ from tomcli.cli._util import (
     SHARED_PARAMS,
     RWEnumChoice,
     SharedArg,
+    TomcliError,
     _std_cm,
     add_args_and_help,
     fatal,
@@ -306,6 +307,7 @@ _LISTS_COMMON_ARGS = SimpleNamespace(
 @click.pass_context
 @_LISTS_COMMON_ARGS.pattern_type
 @_LISTS_COMMON_ARGS.first
+@SHARED_PARAMS.required
 @add_args_and_help(
     SHARED_PARAMS.selector,
     _LISTS_COMMON_ARGS.pattern,
@@ -318,6 +320,7 @@ def lists_replace(
     repl: str,
     pattern_type: PATTERN_TYPES,
     first: bool,
+    required: bool,
 ):
     """
     Replace string values in a TOML list with other string values.
@@ -325,7 +328,7 @@ def lists_replace(
     """
     modder: ModderCtx = ctx.ensure_object(ModderCtx)
     modder.set_default_rw(Reader.TOMLKIT, Writer.TOMLKIT)
-    cb = _repl_match_factory(pattern_type, first, pattern, repl)
+    cb = _repl_match_factory(pattern_type, first, pattern, repl, required=required)
     return set_type(
         fun_msg=None, modder=modder, selector=selector, value=..., callback=cb
     )
@@ -339,6 +342,7 @@ lsts.add_command(lists_replace, "replace")
 @_LISTS_COMMON_ARGS.pattern_type
 @_LISTS_COMMON_ARGS.first
 @click.option("--key")
+@SHARED_PARAMS.required
 @add_args_and_help(SHARED_PARAMS.selector, _LISTS_COMMON_ARGS.pattern)
 def lists_delete(
     ctx: click.Context,
@@ -347,6 +351,7 @@ def lists_delete(
     pattern_type: PATTERN_TYPES,
     first: bool,
     key: str | None,
+    required: bool,
 ):
     """
     Delete string values in a TOML list.
@@ -354,13 +359,22 @@ def lists_delete(
     """
     modder: ModderCtx = ctx.ensure_object(ModderCtx)
     modder.set_default_rw(Reader.TOMLKIT, Writer.TOMLKIT)
-    cb = _repl_match_factory(pattern_type, first, pattern, None, key=key)
+    cb = _repl_match_factory(
+        pattern_type, first, pattern, None, key=key, required=required
+    )
     return set_type(
         fun_msg=None, modder=modder, selector=selector, value=..., callback=cb
     )
 
 
 lsts.add_command(lists_delete, "delitem")
+
+
+class NoMatchError(TomcliError):
+    DEFAULT_MESSAGE = "No match was found for PATTERN"
+
+    def __init__(self, message: str = DEFAULT_MESSAGE) -> None:
+        super().__init__(message)
 
 
 def _repl_match_factory(
@@ -370,12 +384,14 @@ def _repl_match_factory(
     repl: str | None,
     *,
     key: str | None = None,
+    required: bool = False,
 ) -> Callable[[MutableMapping[str, Any], str], None]:
     def callback(cur: MutableMapping[str, Any], part: str) -> None:  # noqa: PLR0912
         if not isinstance(cur[part], MutableSequence):
             fatal("You cannot replace values unless the value is a list")
         lst: list[Any] = cur[part]
         next_idx: int = 0
+        has_matched = False
         for item in lst.copy():
             next_idx += 1
             if key is not None:
@@ -399,6 +415,7 @@ def _repl_match_factory(
                     if repl is not None:
                         current_repl = matcher.expand(repl)
             if match:
+                has_matched = True
                 if repl is None:
                     del lst[next_idx - 1]
                     next_idx -= 1
@@ -406,6 +423,8 @@ def _repl_match_factory(
                     lst[next_idx - 1] = current_repl
                 if first:
                     break
+        if required and not has_matched:
+            raise NoMatchError
 
     return callback
 

@@ -251,3 +251,30 @@ def test_set_lists_delitem_key(rwargs, tmp_path: Path) -> None:
 
     del orig["test"][0]
     assert loads(path.read_text()) == orig
+
+
+def test_set_lists_lists_delitem_required(rwargs, tmp_path: Path) -> None:
+    orig_path = TEST_DATA / "pyproject.toml"
+    path = tmp_path / "pyproject.toml"
+    orig_contents = orig_path.read_text()
+    orig = loads(orig_contents)
+    copy2(orig_path, path)
+
+    args = [
+        *rwargs,
+        str(path),
+        "lists",
+        "delitem",
+        "--required",
+        "project.dependencies",
+        "nothing",
+    ]
+    ran = CliRunner().invoke(app, args, catch_exceptions=True)
+    assert ran.exit_code == 1
+    assert ran.stdout == "No match was found for PATTERN\n"
+    assert path.read_text() == orig_contents
+
+    args = [*rwargs, str(path), "lists", "delitem", "project.dependencies", "nothing"]
+    ran = CliRunner().invoke(app, args, catch_exceptions=False)
+    assert ran.exit_code == 0
+    assert loads(path.read_text()) == orig
