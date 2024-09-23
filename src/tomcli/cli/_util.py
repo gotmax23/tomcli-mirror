@@ -9,7 +9,7 @@ from collections.abc import Callable, Iterator
 from contextlib import contextmanager
 from dataclasses import dataclass
 from enum import Enum
-from functools import wraps
+from functools import partial, wraps
 from textwrap import dedent
 from types import SimpleNamespace
 from typing import IO, TYPE_CHECKING, Any, AnyStr, NoReturn, TypeVar, cast
@@ -214,11 +214,22 @@ def add_args_and_help(
     return inner
 
 
+class PATTERN_TYPES(str, Enum):
+    REGEX = "regex"
+    FNMATCH = "fnmatch"
+
+
 SELECTOR_HELP = (
     "A dot separated map to a key in the TOML mapping."
     " Example: 'section1.subsection.value'"
 )
 
+_required_partial = partial(
+    click.option,
+    "--required / --not-required",
+    default=False,
+    help="Fail if no match for PATTERN is found",
+)
 
 SHARED_PARAMS = SimpleNamespace(
     writer=click.option("--writer", default=None, type=RWEnumChoice(Writer)),
@@ -237,12 +248,21 @@ SHARED_PARAMS = SimpleNamespace(
         help=SELECTOR_HELP,
     ),
     formatter=click.option("-F", "--formatter", default=DEFAULT_FORMATTER),
-    required=click.option(
-        "--required / --not-required",
-        default=False,
-        help="Fail if no match for PATTERN is found",
-    ),
+    required=_required_partial(),
+    required_partial=_required_partial,
     version=click.version_option(_ver, message="%(version)s"),
+    pattern=SharedArg(
+        click.argument("pattern"),
+        help="Pattern against which to match strings",
+    ),
+    pattern_type=click.option(
+        "-t",
+        "--type",
+        "pattern_type",
+        default=PATTERN_TYPES.REGEX,
+        type=RWEnumChoice(PATTERN_TYPES),
+    ),
+    repl=SharedArg(click.argument("repl"), help="Replacement string"),
 )
 
 

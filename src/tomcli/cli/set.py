@@ -9,7 +9,6 @@ import operator
 import re
 import sys
 from collections.abc import Callable, Mapping, MutableMapping, MutableSequence, Sequence
-from enum import Enum
 from fnmatch import fnmatch
 from types import SimpleNamespace
 from typing import Any, TypeVar, cast
@@ -23,9 +22,8 @@ import click
 
 from tomcli.cli._util import (
     DEFAULT_CONTEXT_SETTINGS,
+    PATTERN_TYPES,
     SHARED_PARAMS,
-    RWEnumChoice,
-    SharedArg,
     TomcliError,
     _std_cm,
     add_args_and_help,
@@ -33,11 +31,6 @@ from tomcli.cli._util import (
     split_by_dot,
 )
 from tomcli.toml import Reader, Writer, dump, load
-
-
-class PATTERN_TYPES(str, Enum):
-    REGEX = "regex"
-    FNMATCH = "fnmatch"
 
 
 @dataclasses.dataclass()
@@ -148,6 +141,34 @@ def string(ctx: click.Context, selector: str, value: str):
         modder=modder,
         selector=selector,
         value=value,
+    )
+
+
+@cli.command(name="replace")
+@click.pass_context
+@SHARED_PARAMS.required_partial(default=True)
+@SHARED_PARAMS.pattern_type
+@add_args_and_help(SHARED_PARAMS.selector, SHARED_PARAMS.pattern, SHARED_PARAMS.repl)
+def replace(
+    ctx: click.Context,
+    selector: str,
+    pattern: str,
+    repl: str,
+    pattern_type: PATTERN_TYPES,
+    required: bool,
+):
+    """
+    Perform a replacement on a string in a TOML file.
+    If PATTERN does not match the existing value and --not-required is not
+    passed, the command will fail.
+    If you simply wish to replace the value of a string field without first checking
+    that it matches an expected value, use the 'str' subcommand instead.
+    """
+    modder: ModderCtx = ctx.ensure_object(ModderCtx)
+    modder.set_default_rw(Reader.TOMLKIT, Writer.TOMLKIT)
+    cb = _repl_match_single_factory(pattern_type, pattern, repl, required)
+    return set_type(
+        fun_msg=None, modder=modder, selector=selector, value=..., callback=cb
     )
 
 
@@ -284,17 +305,6 @@ def _append_callback(cur: MutableMapping[str, Any], part: str, value: list[Any])
 
 
 _LISTS_COMMON_ARGS = SimpleNamespace(
-    pattern=SharedArg(
-        click.argument("pattern"),
-        help="Pattern against which to match strings",
-    ),
-    pattern_type=click.option(
-        "-t",
-        "--type",
-        "pattern_type",
-        default=PATTERN_TYPES.REGEX,
-        type=RWEnumChoice(PATTERN_TYPES),
-    ),
     first=click.option(
         "--first / --no-first",
         default=False,
@@ -305,13 +315,13 @@ _LISTS_COMMON_ARGS = SimpleNamespace(
 
 @arrays.command(name="replace")
 @click.pass_context
-@_LISTS_COMMON_ARGS.pattern_type
+@SHARED_PARAMS.pattern_type
 @_LISTS_COMMON_ARGS.first
 @SHARED_PARAMS.required
 @add_args_and_help(
     SHARED_PARAMS.selector,
-    _LISTS_COMMON_ARGS.pattern,
-    SharedArg(click.argument("repl"), help="Replacement string"),
+    SHARED_PARAMS.pattern,
+    SHARED_PARAMS.repl,
 )
 def lists_replace(
     ctx: click.Context,
@@ -339,11 +349,11 @@ lsts.add_command(lists_replace, "replace")
 
 @arrays.command(name="delitem")
 @click.pass_context
-@_LISTS_COMMON_ARGS.pattern_type
+@SHARED_PARAMS.pattern_type
 @_LISTS_COMMON_ARGS.first
 @click.option("--key")
 @SHARED_PARAMS.required
-@add_args_and_help(SHARED_PARAMS.selector, _LISTS_COMMON_ARGS.pattern)
+@add_args_and_help(SHARED_PARAMS.selector, SHARED_PARAMS.pattern)
 def lists_delete(
     ctx: click.Context,
     selector: str,
@@ -377,6 +387,97 @@ class NoMatchError(TomcliError):
         super().__init__(message)
 
 
+def _repl_match_string(
+    pattern_type: PATTERN_TYPES, pattern: str, repl: str | None
+) -> Callable[[str], tuple[bool, str | None]]:
+    """
+    Factory function for pattern matching a single string and optionally, replacing its
+    text
+
+    Args:
+        pattern_type:
+            What type of pattern. Can be a regex or fnmatch-style pattern.
+        pattern:
+            The pattern
+        repl:
+            The replacement text or None.
+            If pattern_type is PATTERN_TYPES.REGEX, `\1` and other substitutions will be
+            expanded.
+
+    Returns:
+        Returns callable that accepts a string to patch and returns a two-tuple of
+        (
+            True if pattern matched else False,
+            replacement if repl was passed to the factory else None
+        )
+    """
+
+    final_pattern: re.Pattern[str] | str = (
+        re.compile(pattern) if pattern_type is PATTERN_TYPES.REGEX else pattern
+    )
+
+    def inner(item: str) -> tuple[bool, str | None]:
+        current_repl = repl
+        match = False
+        if pattern_type is PATTERN_TYPES.FNMATCH:
+            match = fnmatch(item, pattern)
+        elif pattern_type is PATTERN_TYPES.REGEX:  # noqa: SIM102
+            if matcher := re.fullmatch(final_pattern, item):
+                match = True
+                if repl is not None:
+                    current_repl = matcher.expand(repl)
+        if not match:
+            return False, None
+        return match, current_repl
+
+    return inner
+
+
+def _repl_match_single_factory(
+    pattern_type: PATTERN_TYPES, pattern: str, repl: str | None, required: bool = False
+) -> Callable[[MutableMapping[str, Any], str], None]:
+    """
+    Factory function for pattern matching a single string in a TOML file and either
+    replacing or removing it
+
+    Args:
+        pattern_type:
+            What type of pattern. Can be a regex or fnmatch-style pattern.
+        pattern:
+            The pattern
+        repl:
+            The replacement text or None if the value should be removed.
+            If pattern_type is PATTERN_TYPES.REGEX, `\1` and other substitutions will be
+            expanded.
+        required:
+            If required is True, the returned function will raise `NoMatchError`
+            if the string does not fully match `pattern`.
+
+    Returns:
+        Returns callable that accepts two-arguments:
+        (MutableMapping, key name in the mapping to replace or delete).
+        The returned callable applies the operation (if there's a match) and returns
+        None.
+    """
+
+    matcher = _repl_match_string(pattern_type, pattern, repl)
+
+    def inner(cur: MutableMapping[str, Any], part: str) -> None:
+        item = cur[part]
+        if not isinstance(item, str):
+            fatal("SELECTOR must point to a string")
+        match, current_repl = matcher(item)
+        if match:
+            if repl:
+                cur[part] = current_repl
+            else:
+                del cur[part]
+        elif required:
+            raise NoMatchError
+
+    return inner
+
+
 def _repl_match_factory(
     pattern_type: PATTERN_TYPES,
     first: bool,
@@ -386,12 +487,43 @@ def _repl_match_factory(
     key: str | None = None,
     required: bool = False,
 ) -> Callable[[MutableMapping[str, Any], str], None]:
-    def callback(cur: MutableMapping[str, Any], part: str) -> None:  # noqa: PLR0912
+    """
+    Factory function for pattern matching an array of strings in a TOML file and either
+    replacing or removing strings within the array based on the pattern
+
+    Args:
+        pattern_type:
+            What type of pattern. Can be a regex or fnmatch-style pattern.
+        first:
+            Whether to quit after the first match is found or to iterate over the entire
+            list
+        pattern:
+            The pattern
+        repl:
+            The replacement text or None if the value should be removed.
+            If pattern_type is PATTERN_TYPES.REGEX, `\1` and other substitutions will be
+            expanded.
+        key:
+            See the explanation of --key in the delitem section of tomcli-set-arrays(1).
+            Key is mutually exclusive with repl.
+        required:
+            If required is True, the returned function will raise `NoMatchError`
+            if the string does not match `pattern`.
+
+    Returns:
+        Returns callable that accepts two-arguments:
+        (MutableMapping, key name of an array of strings).
+        The returned callable applies the operation (if there's a match) and returns
+        None.
+    """
+    matcher = _repl_match_string(pattern_type, pattern, repl)
+
+    def inner(cur: MutableMapping[str, Any], part: str) -> None:  # noqa: PLR0912
         if not isinstance(cur[part], MutableSequence):
             fatal("You cannot replace values unless the value is a list")
         lst: list[Any] = cur[part]
         next_idx: int = 0
-        has_matched = False
+        any_has_matched = False
         for item in lst.copy():
             next_idx += 1
             if key is not None:
@@ -405,28 +537,21 @@ def _repl_match_factory(
                 item = cast(str, item)
             elif not isinstance(item, str):
                 continue
-            current_repl = repl
-            match = False
-            if pattern_type is PATTERN_TYPES.FNMATCH:
-                match = fnmatch(item, pattern)
-            elif pattern_type is PATTERN_TYPES.REGEX:  # noqa: SIM102
-                if matcher := re.fullmatch(pattern, item):
-                    match = True
-                    if repl is not None:
-                        current_repl = matcher.expand(repl)
-            if match:
-                has_matched = True
-                if repl is None:
-                    del lst[next_idx - 1]
-                    next_idx -= 1
-                else:
-                    lst[next_idx - 1] = current_repl
-                if first:
-                    break
-        if required and not has_matched:
+            match, current_repl = matcher(item)
+            if not match:
+                continue
+            any_has_matched |= match
+            if repl is None:
+                del lst[next_idx - 1]
+                next_idx -= 1
+            else:
+                lst[next_idx - 1] = current_repl
+            if first:
+                break
+        if required and not any_has_matched:
             raise NoMatchError
 
-    return callback
+    return inner
 
 
 T = TypeVar("T")
@@ -492,6 +617,7 @@ def set_type(  # noqa: PLR0913
         if part not in cur and default is not ...:
             cur[part] = default()
         cur = cur[part]
+    # These call-arg type ignores are much easier than writing @typing.overloads...
     if value is ...:
         callback(cur, part)  # type: ignore[call-arg]
     else:

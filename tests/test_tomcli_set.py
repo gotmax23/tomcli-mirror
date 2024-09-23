@@ -253,6 +253,29 @@ def test_set_lists_delitem_key(rwargs, tmp_path: Path) -> None:
     assert loads(path.read_text()) == orig
 
 
+def test_set_lists_delitem_key_required(rwargs, tmp_path: Path) -> None:
+    orig_path = TEST_DATA / "test_9.toml"
+    path = tmp_path / "test_9.toml"
+    orig = loads(orig_path.read_text())
+    copy2(orig_path, path)
+
+    args = [
+        *rwargs,
+        str(path),
+        "lists",
+        "delitem",
+        "--required",
+        "--key=name",
+        "test",
+        "delete_.*",
+    ]
+    ran = CliRunner().invoke(app, args, catch_exceptions=False)
+    assert ran.exit_code == 0
+
+    del orig["test"][0]
+    assert loads(path.read_text()) == orig
+
+
 def test_set_lists_lists_delitem_required(rwargs, tmp_path: Path) -> None:
     orig_path = TEST_DATA / "pyproject.toml"
     path = tmp_path / "pyproject.toml"
@@ -278,3 +301,47 @@ def test_set_lists_lists_delitem_required(rwargs, tmp_path: Path) -> None:
     ran = CliRunner().invoke(app, args, catch_exceptions=False)
     assert ran.exit_code == 0
     assert loads(path.read_text()) == orig
+
+
+def test_replace(rwargs, tmp_path: Path) -> None:
+    orig_path = TEST_DATA / "test1.toml"
+    path = tmp_path / "test1.toml"
+    orig_contents = orig_path.read_text()
+    orig = loads(orig_contents)
+    copy2(orig_path, path)
+
+    args = [*rwargs, str(path), "replace", "abc.data", r"\d+", "x234"]
+    ran = CliRunner().invoke(app, args, catch_exceptions=False)
+    assert ran.exit_code == 0
+    changed = loads(path.read_text())
+    orig["abc"]["data"] = "x234"
+    assert changed == orig
+
+    args = [
+        *rwargs,
+        str(path),
+        "replace",
+        "--not-required",
+        "abc.data",
+        r"does not match",
+        "fjjfjf",
+    ]
+    ran = CliRunner().invoke(app, args, catch_exceptions=False)
+    assert ran.exit_code == 0
+    changed_contents = path.read_text()
+    changed = loads(changed_contents)
+    assert changed == orig
+
+    args = [
+        *rwargs,
+        str(path),
+        "replace",
+        "abc.data",
+        r"does not match",
+        "fjjfjf",
+    ]
+    ran = CliRunner().invoke(app, args, catch_exceptions=False)
+    assert ran.exit_code == 1
+    print(ran)
+    assert ran.stdout == "No match was found for PATTERN\n"
+    assert path.read_text() == changed_contents
