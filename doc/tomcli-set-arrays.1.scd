@@ -35,7 +35,8 @@ backwards compatibility is important to the tomcli project.
 	The pattern must match the full string.
 *REPL*
 	Replacement string (used by *replace* subcommand).
-	Support Python regex expansions (e.g. *\\1*) when 
+	Supports Python regex expansions (e.g. *\\1*) when
+	*--type* is set to _regex_ (i.e., the default value).
 
 # GLOBAL OPTIONS
 
