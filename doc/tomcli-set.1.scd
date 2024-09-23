@@ -52,9 +52,18 @@ The *tomcli-set* subcommand supports modifying TOML files.
 
 ## replace
 
-*-t* / *--type* <_regex_|_fnmatch_> (default: _regex_)
+*-t* / *--type* <_regex\_fullmatch_|_regex_|_regex\_partial_|_fnmatch_>
+(default: _regex\_fullmatch_)
 	Matcher type.
-	Python regexes and fnmatch(3)-style patterns are supported.
+
+	- _regex\_fullmatch_: Equivalent to *re.fullmatch* in Python.
+	  The regex must match the whole string.
+	- _regex_: Alias for _regex\_fullmatch_
+	- _regex\_partial_: Equivalent to *re.match* in Python. The regex
+	  matching starts at the beginning of the string
+	  but does not have to match all of it.
+	- _fnmatch_: Use an *fnmatch(3)*-style pattern.
+	  The glob must match the whole string.
 
 # COMMANDS
 

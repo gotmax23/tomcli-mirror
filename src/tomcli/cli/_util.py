@@ -215,7 +215,10 @@ def add_args_and_help(
 
 
 class PATTERN_TYPES(str, Enum):
-    REGEX = "regex"
+    REGEX_FULLMATCH = "regex_fullmatch"
+    REGEX = "regex"  # Alias for REGEX_FULLMATCH
+    REGEX_PARTIAL = "regex_partial"
+    # REGEX_SEARCH = "regex_search"  # TODO: Allow search
     FNMATCH = "fnmatch"
 
 
@@ -259,7 +262,7 @@ SHARED_PARAMS = SimpleNamespace(
         "-t",
         "--type",
         "pattern_type",
-        default=PATTERN_TYPES.REGEX,
+        default=PATTERN_TYPES.REGEX_FULLMATCH,
         type=RWEnumChoice(PATTERN_TYPES),
     ),
     repl=SharedArg(click.argument("repl"), help="Replacement string"),

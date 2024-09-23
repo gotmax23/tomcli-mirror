@@ -401,7 +401,7 @@ def _repl_match_string(
             The pattern
         repl:
             The replacement text or None.
-            If pattern_type is PATTERN_TYPES.REGEX, `\1` and other substitutions will be
+            If pattern_type is a regex, `\1` and other substitutions will be
             expanded.
 
     Returns:
@@ -413,7 +413,7 @@ def _repl_match_string(
     """
 
     final_pattern: re.Pattern[str] | str = (
-        re.compile(pattern) if pattern_type is PATTERN_TYPES.REGEX else pattern
+        re.compile(pattern) if pattern_type is not PATTERN_TYPES.FNMATCH else pattern
     )
 
     def inner(item: str) -> tuple[bool, str | None]:
@@ -421,8 +421,13 @@ def _repl_match_string(
         match = False
         if pattern_type is PATTERN_TYPES.FNMATCH:
             match = fnmatch(item, pattern)
-        elif pattern_type is PATTERN_TYPES.REGEX:  # noqa: SIM102
-            if matcher := re.fullmatch(final_pattern, item):
+        else:  # noqa: SIM102
+            re_match = (
+                re.match
+                if pattern_type is PATTERN_TYPES.REGEX_PARTIAL
+                else re.fullmatch
+            )
+            if matcher := re_match(final_pattern, item):
                 match = True
                 if repl is not None:
                     current_repl = matcher.expand(repl)
