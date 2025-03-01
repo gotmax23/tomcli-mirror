@@ -9,7 +9,7 @@ from collections.abc import Sequence
 from glob import iglob
 from pathlib import Path
 from shutil import copy2
-from typing import Any, Union
+from typing import Any, Union, cast
 
 import nox
 
@@ -78,7 +78,7 @@ def coverage(session: nox.Session):
 @nox.session()
 def covtest(session: nox.Session):
     session.run("rm", "-f", *glob.iglob(".nox/*/tmp/.coverage*"), external=True)
-    test_sessions = (f"test-{v}" for v in test.python)  # type: ignore[attr-defined]
+    test_sessions = (f"test-{v}" for v in cast("Sequence[str]", test.python))
     for target in test_sessions:
         session.notify(target, ["--cov"])
     session.notify("coverage")
