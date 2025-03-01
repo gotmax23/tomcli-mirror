@@ -422,15 +422,19 @@ def _repl_match_string(
         if pattern_type is PATTERN_TYPES.FNMATCH:
             match = fnmatch(item, pattern)
         else:  # noqa: SIM102
-            re_match = (
-                re.match
-                if pattern_type is PATTERN_TYPES.REGEX_PARTIAL
-                else re.fullmatch
-            )
+            pt = PATTERN_TYPES
+            re_matchers = {
+                pt.REGEX: re.fullmatch,
+                pt.REGEX_FULLMATCH: re.fullmatch,
+                pt.REGEX_PARTIAL: re.match,
+                pt.REGEX_SEARCH: re.search,
+            }
+            re_match = re_matchers[pattern_type]
             if matcher := re_match(final_pattern, item):
                 match = True
                 if repl is not None:
-                    current_repl = matcher.expand(repl)
+                    start, end = matcher.span()
+                    current_repl = item[:start] + matcher.expand(repl) + item[end:]
         if not match:
             return False, None
         return match, current_repl

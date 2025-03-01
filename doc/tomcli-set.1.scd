@@ -62,6 +62,8 @@ The *tomcli-set* subcommand supports modifying TOML files.
 	- _regex\_partial_: Equivalent to *re.match* in Python. The regex
 	  matching starts at the beginning of the string
 	  but does not have to match all of it.
+	- _regex\_search_: Equivalent to *re.search* / *re.sub* (with *count=1*)
+	  in Python. The regex can match any part of the string, once.
 	- _fnmatch_: Use an *fnmatch(3)*-style pattern.
 	  The glob must match the whole string.
 

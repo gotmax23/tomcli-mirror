@@ -216,9 +216,9 @@ def add_args_and_help(
 
 class PATTERN_TYPES(str, Enum):
     REGEX_FULLMATCH = "regex_fullmatch"
-    REGEX = "regex"  # Alias for REGEX_FULLMATCH
+    REGEX = "regex"  # Same behavior as REGEX_FULLMATCH
     REGEX_PARTIAL = "regex_partial"
-    # REGEX_SEARCH = "regex_search"  # TODO: Allow search
+    REGEX_SEARCH = "regex_search"
     FNMATCH = "fnmatch"
 
 
