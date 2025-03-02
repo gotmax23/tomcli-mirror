@@ -4,6 +4,8 @@
 outdir ::= results_tomcli
 
 srpm:
-	command -v pipx || $(sudo) dnf install -y pipx
-	command -v git || $(sudo) dnf install -y git-core
-	pipx run nox -e srpm -- -o $(outdir)
+	command -v pip || $(SUDO) dnf install -y python3-pip
+	command -v fclogr || $(SUDO) dnf install -y python3-pygit2 python3-rpm
+	command -v fclogr || pip install --user fclogr
+	command -v nox || $(SUDO) dnf install -y nox
+	python3 -m nox --no-venv -e srpm -- -o $(outdir)
