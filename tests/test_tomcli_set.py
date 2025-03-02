@@ -195,6 +195,29 @@ def test_set_lists_replace_regex_search(rwargs, tmp_path: Path):
     assert loads(path.read_text()) == orig
 
 
+def test_set_lists_delitem_regex_search(rwargs, tmp_path: Path):
+    orig_path = TEST_DATA / "test2.toml"
+    path = tmp_path / "test2.toml"
+    orig = loads(orig_path.read_text())
+    copy2(orig_path, path)
+
+    args = [
+        *rwargs,
+        str(path),
+        "lists",
+        "delitem",
+        "--type",
+        "regex_search",
+        "lst.data",
+        "bc",
+    ]
+    ran = CliRunner().invoke(app, args, catch_exceptions=False)
+    assert ran.exit_code == 0
+
+    orig["lst"]["data"].pop(2)  # "abc" -> removed
+    assert loads(path.read_text()) == orig
+
+
 def test_set_lists_replace_regex2(rwargs, tmp_path: Path):
     orig_path = TEST_DATA / "test2.toml"
     path = tmp_path / "test2.toml"
