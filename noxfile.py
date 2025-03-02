@@ -190,7 +190,7 @@ def copr_release(session: nox.Session):
 def srpm(session: nox.Session, posargs: Sequence[StrPath] | None = None):
     install(session, "fclogr")
     posargs = posargs or session.posargs
-    session.run("fclogr", "--debug", "dev-srpm", *posargs, SPECFILE)
+    session.run("python3", "-m", "fclogr", "--debug", "dev-srpm", *posargs, SPECFILE)
 
 
 @nox.session
