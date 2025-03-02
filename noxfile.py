@@ -12,6 +12,7 @@ from shutil import copy2
 from typing import Any, Union, cast
 
 import nox
+import nox.virtualenv
 
 StrPath = Union[str, "os.PathLike[str]"]
 IN_CI = "JOB_ID" in os.environ or "CI" in os.environ
@@ -39,6 +40,10 @@ nox.options.sessions = (*LINT_SESSIONS, "covtest")
 
 
 def install(session: nox.Session, *args: str, editable: bool = False, **kwargs: Any):
+    # nox --no-venv
+    if isinstance(session.virtualenv, nox.virtualenv.PassthroughEnv):
+        session.warn(f"No venv. Skipping installation of {args}")
+        return
     if editable and ALLOW_EDITABLE:
         args = ("-e", *args)
     session.install(*args, **kwargs)
