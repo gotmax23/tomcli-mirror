@@ -98,7 +98,7 @@ def arrays() -> None:
 @cli.group(name="lists")
 def lsts():
     """
-    Alias for array subcommand
+    Alias for arrays subcommand
     """
 
 
