@@ -6,6 +6,16 @@ SPDX-License-Identifier: MIT
 NEWS
 =======
 
+## 0.9.0 - 2025-03-02 <a id='0.9.0'></a>
+
+### Added
+
+- set: add top-level `replace` command based on `arrays replace` that operates
+  on a single string key instead of an array of strings
+- set: add `--required` flag to `[arrays] replace` and `arrays delitem` subcommands
+- set: add `regex_fullmatch`, `regex_partial`, and `regex_search` pattern types
+  to `[arrays] replace` and `arrays delitem`
+
 ## 0.8.0 - 2024-09-16 <a id='0.8.0'></a>
 
 ### Added
