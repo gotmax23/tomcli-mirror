@@ -15,6 +15,7 @@ from types import SimpleNamespace
 from typing import IO, TYPE_CHECKING, Any, AnyStr, NoReturn, TypeVar, cast
 
 import click
+from click.exceptions import Exit
 
 from tomcli import __version__ as _ver
 from tomcli._peekable import peekable
@@ -48,7 +49,7 @@ def _std_cm(path: str, dash_stream: IO[AnyStr], mode: str) -> Iterator[IO[AnyStr
 
 def fatal(*args: object, returncode: int = 1) -> NoReturn:
     print(*args, file=sys.stderr)
-    click.get_current_context().exit(returncode)
+    raise Exit(returncode)
 
 
 def _verify_part(part: str) -> str:
@@ -207,7 +208,7 @@ def add_args_and_help(
             try:
                 return func(*args, **kwargs)
             except TomcliError as exc:
-                sys.exit(str(exc))
+                fatal(str(exc))
 
         return newfunc
 
