@@ -26,14 +26,14 @@ CLI for working with TOML files. Pronounced "tom clee."
 
 ## Examples
 
-### `tomcli-get`
+### `tomcli get`
 
 > Query TOML files
 
 Print a TOML table:
 
 ``` console
-$ tomcli-get pyproject.toml build-system
+$ tomcli get pyproject.toml build-system
 [build-system]
 requires = ["flit_core >=3.2,<4"]
 build-backend = "flit_core.buildapi"
@@ -42,13 +42,13 @@ build-backend = "flit_core.buildapi"
 Get a newline-separated list of strings:
 
 ``` console
-$ tomcli-get pyproject.toml --formatter newline-list project.dependencies
+$ tomcli get pyproject.toml --formatter newline-list project.dependencies
 click
 importlib_metadata; python_version<'3.11'
 ```
 
 List all available formatters for use
-with `tomcli-get -F` / `tomcli-get --formatter`:
+with `tomcli get -F` / `tomcli get --formatter`:
 
 ``` console
 $ tomcli-formatters
@@ -76,37 +76,37 @@ toml
 
 ```
 
-### `tomcli-set`
+### `tomcli set`
 
 > Modify TOML files
 
 Delete a TOML value:
 
 ``` console
-$ tomcli-set pyproject.toml del 'project.dependencies'
+$ tomcli set pyproject.toml del 'project.dependencies'
 ```
 
 Set a value to `true` or `false`:
 
 ``` console
-$ tomcli-set pyproject.toml true 'tool.mypy.check_untyped_defs'
-$ tomcli-set pyproject.toml false 'tool.mypy.check_untyped_defs'
+$ tomcli set pyproject.toml true 'tool.mypy.check_untyped_defs'
+$ tomcli set pyproject.toml false 'tool.mypy.check_untyped_defs'
 ```
 
 Set a `float` or `int` value:
 
 ``` console
-$ tomcli-set pyproject.toml float 'tool.coverage.run.fail_under' '90.0'
-$ tomcli-set pyproject.toml int 'tool.coverage.run.fail_under' '90'
+$ tomcli set pyproject.toml float 'tool.coverage.run.fail_under' '90.0'
+$ tomcli set pyproject.toml int 'tool.coverage.run.fail_under' '90'
 ```
 
 Set a string value:
 
 ``` console
-$ tomcli-set pyproject.toml str 'project.readme' 'README.rst'
+$ tomcli set pyproject.toml str 'project.readme' 'README.rst'
 ```
 
-### `tomcli-get arrays`
+### `tomcli get arrays`
 
 > Modify arrays within a TOML file
 
@@ -115,14 +115,14 @@ Remove all values that match a Python regex:
 > **NOTE:** The regex must match the entire string
 
 ``` console
-$ tomcli-set pyproject.toml arrays delitem \
+$ tomcli set pyproject.toml arrays delitem \
     'project.classifiers' 'Programming Language :: Python.*'
 ```
 
 Remove all values that match an fnmatch-style pattern:
 
 ``` console
-$ tomcli-set pyproject.toml arrays delitem --type fnmatch \
+$ tomcli set pyproject.toml arrays delitem --type fnmatch \
     'project.optional-dependencies.dev' '*cov*'
 ```
 
@@ -131,7 +131,7 @@ Replace values that match a Python regex:
 > **NOTE:** The regex must match the entire string
 
 ``` console
-$ tomcli-set pyproject.toml arrays replace \
+$ tomcli set pyproject.toml arrays replace \
     'project.optional-dependencies.test' '(.+)==(.+)' '\1>=\2'
 ```
 
@@ -141,7 +141,7 @@ Create a list of strings:
 ## Create the new file
 $ touch plays.toml
 ## Automatically creates the "Romeo and Juliet" table
-$ tomcli-set plays.toml arrays str \
+$ tomcli set plays.toml arrays str \
     '"Romeo and Juliet".characters' 'Romeo' 'Juliet' 'Mercuitio' 'Nurse'
 ```
 
