@@ -20,6 +20,7 @@ class Reader(enum.Enum):
 
     TOMLLIB = "tomllib"
     TOMLKIT = "tomlkit"
+    TOMLI = "tomli"
 
 
 class Writer(enum.Enum):
@@ -39,11 +40,22 @@ _ReaderOrWriterT = TypeVar("_ReaderOrWriterT", bound="Reader|Writer")
 AVAILABLE_READERS: dict[Reader, ModuleType] = {}
 AVAILABLE_WRITERS: dict[Writer, ModuleType] = {}
 
+# Support tomli as a separate entity than tomllib.
+# Newer versions are compiled with mypyc and are more performant than built-in
+# tomllib, so there is a valid reason to select it explicitly.
+try:
+    import tomli
+except ImportError:
+    pass
+else:
+    AVAILABLE_READERS[Reader.TOMLI] = tomli
+
 if sys.version_info[:2] >= (3, 11):
     import tomllib
 
     AVAILABLE_READERS[Reader.TOMLLIB] = tomllib
 else:
+    # For backwards compatibility, use tomli as tomllib for older Pythons
     try:
         import tomli as tomllib
     except ImportError:
