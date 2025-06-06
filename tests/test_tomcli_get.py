@@ -37,7 +37,7 @@ def test_get_invalid_selector(writer: str, reader: str, test_data: Path):
         "Invalid selector 'build-system.abc.xyz': could not find 'build-system.abc'\n"
     )
     assert ran.exit_code == 1
-    assert ran.stdout == expected
+    assert ran.output == expected
 
 
 def test_get_dict_dump(writer: str, reader: str, test_data: Path):

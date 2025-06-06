@@ -146,14 +146,18 @@ def split_by_dot(selector: str) -> Iterator[str]:
 # Based on https://github.com/pallets/click/pull/2210 and
 # https://github.com/pallets/click/issues/605
 # Copyright 2014 Pallets and Click contributors
-class RWEnumChoice(click.Choice):
+
+
+# Disable type argument errors for compat with older click
+class RWEnumChoice(click.Choice):  # pyright: ignore[reportMissingTypeArgument]
     def __init__(
         self,
         enum_type: type[Enum],
         case_sensitive: bool = True,
         force_lowercase: bool = True,
     ):
-        super().__init__(
+        # Disable type argument errors for compat with older click
+        super().__init__(  # pyright: ignore[reportUnknownMemberType]
             choices=[
                 element.name.lower() if force_lowercase else element.name
                 for element in enum_type
@@ -164,11 +168,11 @@ class RWEnumChoice(click.Choice):
         self.force_lowercase: bool = force_lowercase
 
     def convert(
-        self, value: Any, param: click.Parameter | None, ctx: click.Context | None
+        self,
+        value: Any,
+        param: click.Parameter | None,  # noqa: ARG002
+        ctx: click.Context | None,  # noqa: ARG002
     ) -> Any:
-        value = super().convert(value=value, param=param, ctx=ctx)
-        if value is None:
-            return None
         return self.enum_type[value.upper() if self.force_lowercase else value]
 
 
@@ -187,6 +191,15 @@ class TomcliError(Exception):
     """
 
 
+def _get_metavar(arg: click.Argument) -> str:
+    metavar: str | None = None
+    if arg.metavar is not None:
+        metavar = arg.metavar
+    else:
+        metavar = cast(str, arg.name).upper()
+    return metavar.removesuffix("...")
+
+
 def add_args_and_help(
     *params: SharedArg | Any,
 ) -> Callable[[Callable[_P, _T]], Callable[_P, _T]]:
@@ -194,7 +207,8 @@ def add_args_and_help(
         helps: list[str] = []
         for param in reversed(params):
             param(func)
-            metavar = func.__click_params__[-1].make_metavar().removesuffix("...")  # type: ignore[attr-defined]
+            arg = cast(click.Argument, func.__click_params__[-1])  # type: ignore[attr-defined]
+            metavar = _get_metavar(arg)
             phelp = f"* {metavar}"
             if isinstance(param, SharedArg) and param.help:
                 phelp += f": {param.help}"

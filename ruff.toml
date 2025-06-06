@@ -34,6 +34,9 @@ ignore = [
     "PLR2004",
     # Too many arguments to function call
     "PLR0913",
+    # if-else-block-instead-of-if-exp
+    # This often makes code less readable
+    "SIM108",
 ]
 
 [lint.extend-per-file-ignores]

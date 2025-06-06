@@ -101,7 +101,7 @@ def test_set_str_root(rwargs, tmp_path: Path):
         "Your heart is in the right place,"
         " but we can't replace the whole file with a string\n"
     )
-    assert ran.stdout == fun_msg
+    assert ran.output == fun_msg
 
 
 def test_set_append(rwargs, tmp_path: Path):
@@ -127,7 +127,7 @@ def test_set_append_error(rwargs, tmp_path: Path):
     args = [*rwargs, str(path), "append", "abc.data", "4"]
     ran = CliRunner().invoke(app, args, catch_exceptions=False)
     assert ran.exit_code == 1
-    assert ran.stdout == (
+    assert ran.output == (
         "You can only append values to an existing list."
         " Use the 'list' subcommand to create a new list\n"
     )
@@ -272,7 +272,7 @@ def test_lists_replace_error(rwargs, tmp_path: Path):
     args = [*rwargs, str(path), "lists", "replace", "abc.data", "xxx", "xxx"]
     ran = CliRunner().invoke(app, args, catch_exceptions=False)
     assert ran.exit_code == 1
-    assert ran.stdout == "You cannot replace values unless the value is a list\n"
+    assert ran.output == "You cannot replace values unless the value is a list\n"
 
 
 def test_set_lists_delitem_regex(rwargs, tmp_path: Path):
@@ -365,7 +365,7 @@ def test_set_lists_lists_delitem_required(rwargs, tmp_path: Path) -> None:
     ]
     ran = CliRunner().invoke(app, args, catch_exceptions=True)
     assert ran.exit_code == 1
-    assert ran.stdout == "No match was found for PATTERN\n"
+    assert ran.output == "No match was found for PATTERN\n"
     assert path.read_text() == orig_contents
 
     args = [*rwargs, str(path), "lists", "delitem", "project.dependencies", "nothing"]
@@ -414,5 +414,5 @@ def test_replace(rwargs, tmp_path: Path) -> None:
     ran = CliRunner().invoke(app, args, catch_exceptions=False)
     assert ran.exit_code == 1
     print(ran)
-    assert ran.stdout == "No match was found for PATTERN\n"
+    assert ran.output == "No match was found for PATTERN\n"
     assert path.read_text() == changed_contents
