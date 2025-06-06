@@ -1,7 +1,7 @@
 # Copyright (C) 2023 Maxwell G <maxwell@gtmx.me>
 # SPDX-License-Identifier: MIT
 ---
-image: fedora/40
+image: fedora/42
 secrets:
   - 1ec4d132-f9e9-4e00-9ba6-eb5528e6945e
 sources:
