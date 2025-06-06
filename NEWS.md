@@ -6,6 +6,19 @@ SPDX-License-Identifier: MIT
 NEWS
 =======
 
+## 0.10.0 - 2025-06-06 <a id='0.10.0'></a>
+
+### Added
+
+- toml: treat tomli as a separate entity from tomllib.
+  This allows using tomli instead of tomllib from the stdlib on newer Python
+  versions to take advantage of the mypyc speedups in tomli.
+- Support Python 3.14
+
+### Fixed
+
+- cli: fix compatibility with click 8.2
+
 ## 0.9.0 - 2025-03-02 <a id='0.9.0'></a>
 
 ### Added
