@@ -10,6 +10,7 @@ from contextlib import contextmanager
 from dataclasses import dataclass
 from enum import Enum
 from functools import partial, wraps
+from importlib import metadata
 from textwrap import dedent
 from types import SimpleNamespace
 from typing import IO, TYPE_CHECKING, Any, AnyStr, NoReturn, TypeVar, cast
@@ -36,6 +37,8 @@ DEFAULT_CONTEXT_SETTINGS = context_settings = dict(
 
 # https://toml.io/en/v1.0.0#keys
 TOML_KEY_MATCHER = re.compile(r"[A-Za-z0-9_-]+")
+
+CLICK_82 = tuple(map(int, metadata.version("click").split(".")[:2])) >= (8, 2)
 
 
 @contextmanager
@@ -143,37 +146,41 @@ def split_by_dot(selector: str) -> Iterator[str]:
         yield _verify_part(parts)
 
 
-# Based on https://github.com/pallets/click/pull/2210 and
-# https://github.com/pallets/click/issues/605
-# Copyright 2014 Pallets and Click contributors
+if TYPE_CHECKING or CLICK_82:
+    RWEnumChoice = click.Choice
+else:
 
+    class RWEnumChoice(click.Choice):  # pyright: ignore[reportMissingTypeArgument]
+        # Based on https://github.com/pallets/click/pull/2210 and
+        # https://github.com/pallets/click/issues/605
+        # Copyright 2014 Pallets and Click contributors
+        def __init__(
+            self,
+            enum_type: type[Enum],
+            case_sensitive: bool = True,
+            force_lowercase: bool = True,
+        ):
+            # Disable type argument errors for compat with older click
+            super().__init__(  # pyright: ignore[reportUnknownMemberType]
+                choices=[
+                    element.name.lower() if force_lowercase else element.name
+                    for element in enum_type
+                ],
+                case_sensitive=case_sensitive,
+            )
+            self.enum_type = enum_type
+            self.force_lowercase: bool = force_lowercase
 
-# Disable type argument errors for compat with older click
-class RWEnumChoice(click.Choice):  # pyright: ignore[reportMissingTypeArgument]
-    def __init__(
-        self,
-        enum_type: type[Enum],
-        case_sensitive: bool = True,
-        force_lowercase: bool = True,
-    ):
-        # Disable type argument errors for compat with older click
-        super().__init__(  # pyright: ignore[reportUnknownMemberType]
-            choices=[
-                element.name.lower() if force_lowercase else element.name
-                for element in enum_type
-            ],
-            case_sensitive=case_sensitive,
-        )
-        self.enum_type = enum_type
-        self.force_lowercase: bool = force_lowercase
-
-    def convert(
-        self,
-        value: Any,
-        param: click.Parameter | None,  # noqa: ARG002
-        ctx: click.Context | None,  # noqa: ARG002
-    ) -> Any:
-        return self.enum_type[value.upper() if self.force_lowercase else value]
+        def convert(
+            self,
+            value: Any,
+            param: click.Parameter | None,  # noqa: ARG002
+            ctx: click.Context | None,  # noqa: ARG002
+        ) -> Any:
+            value = super().convert(value=value, param=param, ctx=ctx)
+            if value is None:
+                return None
+            return self.enum_type[value.upper() if self.force_lowercase else value]
 
 
 @dataclass
@@ -250,8 +257,8 @@ _required_partial = partial(
 )
 
 SHARED_PARAMS = SimpleNamespace(
-    writer=click.option("--writer", default=None, type=RWEnumChoice(Writer)),
-    reader=click.option("--reader", default=None, type=RWEnumChoice(Reader)),
+    writer=click.option("--writer", default=None, type=RWEnumChoice(Writer, False)),
+    reader=click.option("--reader", default=None, type=RWEnumChoice(Reader, False)),
     path=SharedArg(
         click.argument("path"),
         help="Path to a TOML file to read. Use '-' to read from stdin."
@@ -278,7 +285,7 @@ SHARED_PARAMS = SimpleNamespace(
         "--type",
         "pattern_type",
         default=PATTERN_TYPES.REGEX_FULLMATCH,
-        type=RWEnumChoice(PATTERN_TYPES),
+        type=RWEnumChoice(PATTERN_TYPES, False),
     ),
     repl=SharedArg(click.argument("repl"), help="Replacement string"),
 )
