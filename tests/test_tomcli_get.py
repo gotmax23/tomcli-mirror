@@ -78,7 +78,7 @@ def test_get_json_formatter(rwargs: list[str], test_data: Path) -> None:
 
 
 def test_get_version():
-    from tomcli import __version__ as ver
+    from tomcli import __version__ as ver  # noqa: PLC0415
 
     ran = CliRunner().invoke(app, ["--version"])
     assert ran.exit_code == 0

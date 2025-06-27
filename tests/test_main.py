@@ -9,7 +9,7 @@ from tomcli.cli.main import APP
 
 
 def test_main_version():
-    from tomcli import __version__ as ver
+    from tomcli import __version__ as ver  # noqa: PLC0415
 
     ran = CliRunner().invoke(APP, ["--version"])
     assert ran.exit_code == 0
