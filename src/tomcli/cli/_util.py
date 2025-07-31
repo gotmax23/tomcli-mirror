@@ -146,6 +146,9 @@ def split_by_dot(selector: str) -> Iterator[str]:
         yield _verify_part(parts)
 
 
+# TODO: Add CLI tests to make sure error handling works properly for
+# RWEnumChoice options when an invalid option is passed and also that different
+# casings work properly.
 if TYPE_CHECKING or CLICK_82:
     RWEnumChoice = click.Choice
 else:
