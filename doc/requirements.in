@@ -3,5 +3,5 @@
 mkdocs
 mkdocs-exclude
 mkdocs-gen-files
-mkdocs-material
+mkdocs-material[imaging]
 releaserr @ git+https://git.sr.ht/~gotmax23/releaserr
