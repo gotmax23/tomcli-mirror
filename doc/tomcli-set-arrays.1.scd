@@ -50,7 +50,7 @@ backwards compatibility is important to the tomcli project.
 
 # OPTIONS
 
-*-t* / *--type* <_regex\_fullmatch_|_regex_|_regex\_partial_|_fnmatch_>
+*-t* / *--type* <_regex\_fullmatch_|_regex_|_regex\_partial_|_regex\_search_|_fnmatch_>
 (default: _regex\_fullmatch_)
 	Matcher type.
 
@@ -72,15 +72,6 @@ backwards compatibility is important to the tomcli project.
 	See the delitem documentation below.
 
 # COMMANDS
-
-## append
-
-Add a string value to a TOML array
-
-```
-tomcli-set [GLOBAL OPTIONS] PATH arrays append [OPTIONS] SELECTOR VALUE 
-tomcli-set ... arrays append --help
-```
 
 ## delitem
 
